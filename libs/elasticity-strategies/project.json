@@ -1,0 +1,49 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/elasticity-strategies/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/elasticity-strategies",
+        "main": "libs/elasticity-strategies/src/index.ts",
+        "tsConfig": "libs/elasticity-strategies/tsconfig.lib.json",
+        "assets": ["libs/elasticity-strategies/*.md"]
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs elasticity-strategies {args.ver} {args.tag}"
+      },
+      "dependsOn": [
+        {
+          "projects": "self",
+          "target": "build"
+        }
+      ]
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/elasticity-strategies/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/elasticity-strategies"],
+      "options": {
+        "jestConfig": "libs/elasticity-strategies/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "gen-crds": {
+      "executor": "@polaris-sloc/polaris-nx:generate-crds",
+      "options": {}
+    }
+  },
+  "tags": []
+}

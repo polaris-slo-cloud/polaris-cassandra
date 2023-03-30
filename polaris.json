@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "projects": {
+    "elasticity-strategies": {
+      "projectType": "library",
+      "tsEntryPoint": "libs/elasticity-strategies/src/index.ts",
+      "importPath": "@nicokratky/elasticity-strategies",
+      "crds": {
+        "tsConfig": "tsconfig.base.json",
+        "outDir": "libs/elasticity-strategies/crds",
+        "polarisTypes": ["HorizontalVerticalElasticityStrategy"]
+      }
+    }
+  }
+}
