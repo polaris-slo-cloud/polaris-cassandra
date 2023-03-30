@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "elasticity-strategies": "libs/elasticity-strategies"
+    "elasticity-strategies": "libs/elasticity-strategies",
+    "horizontal-vertical-elasticity-strategy-controller": "apps/horizontal-vertical-elasticity-strategy-controller"
   }
 }
