@@ -8,7 +8,10 @@
       "crds": {
         "tsConfig": "tsconfig.base.json",
         "outDir": "libs/elasticity-strategies/crds",
-        "polarisTypes": ["HorizontalVerticalElasticityStrategy"]
+        "polarisTypes": [
+          "HorizontalVerticalElasticityStrategy",
+          "HorizontalElasticityStrategy"
+        ]
       }
     },
     "horizontal-vertical-elasticity-strategy-controller": {
