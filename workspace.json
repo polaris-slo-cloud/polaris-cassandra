@@ -4,6 +4,7 @@
   "projects": {
     "elasticity-strategies": "libs/elasticity-strategies",
     "horizontal-elasticity-strategy-controller": "apps/horizontal-elasticity-strategy-controller",
-    "horizontal-vertical-elasticity-strategy-controller": "apps/horizontal-vertical-elasticity-strategy-controller"
+    "horizontal-vertical-elasticity-strategy-controller": "apps/horizontal-vertical-elasticity-strategy-controller",
+    "slos": "libs/slos"
   }
 }

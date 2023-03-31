@@ -21,6 +21,16 @@
     "horizontal-elasticity-strategy-controller": {
       "projectType": "elasticity-strategy-controller",
       "tsEntryPoint": "apps/horizontal-elasticity-strategy-controller/src/main.ts"
+    },
+    "slos": {
+      "projectType": "library",
+      "tsEntryPoint": "libs/slos/src/index.ts",
+      "importPath": "@nicokratky/slos",
+      "crds": {
+        "tsConfig": "tsconfig.base.json",
+        "outDir": "libs/slos/crds",
+        "polarisTypes": ["EfficiencyMetricMapping"]
+      }
     }
   }
 }

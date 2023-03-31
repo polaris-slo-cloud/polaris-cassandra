@@ -17,7 +17,8 @@
     "paths": {
       "@nicokratky/elasticity-strategies": [
         "libs/elasticity-strategies/src/index.ts"
-      ]
+      ],
+      "@nicokratky/slos": ["libs/slos/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
