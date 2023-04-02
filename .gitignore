@@ -37,3 +37,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# testbed fs structure
+/testbed/polaris-disks/**
+!/testbed/polaris-disks/*/
+!/testbed/polaris-disks/*/*/
+!/testbed/polaris-disks/*/*/.gitkeep
