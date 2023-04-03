@@ -1,0 +1,76 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/reactive-efficiency/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/reactive-efficiency",
+        "main": "apps/reactive-efficiency/src/main.ts",
+        "tsConfig": "apps/reactive-efficiency/tsconfig.app.json",
+        "assets": ["apps/reactive-efficiency/src/assets"],
+        "externalDependencies": "none"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/reactive-efficiency/src/environments/environment.ts",
+              "with": "apps/reactive-efficiency/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "reactive-efficiency:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "reactive-efficiency:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/reactive-efficiency/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/reactive-efficiency"],
+      "options": {
+        "jestConfig": "apps/reactive-efficiency/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker build -f ./apps/reactive-efficiency/Dockerfile --build-arg POLARIS_APP_TYPE=slo --build-arg POLARIS_APP_NAME=reactive-efficiency -t polarissloc/reactive-efficiency:latest ."
+        ],
+        "parallel": false
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "kubectl apply -f ./apps/reactive-efficiency/manifests/kubernetes"
+        ],
+        "parallel": false
+      }
+    }
+  },
+  "tags": []
+}
