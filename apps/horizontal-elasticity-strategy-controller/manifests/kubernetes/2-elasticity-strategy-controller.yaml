@@ -36,6 +36,7 @@ spec:
           effect: NoSchedule
       containers:
         - image: polarissloc/horizontal-elasticity-strategy-controller:latest
+          imagePullPolicy: Never
           name: elasticity-controller
           resources:
             limits:
