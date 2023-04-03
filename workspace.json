@@ -2,9 +2,11 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "efficiency-controller": "apps/efficiency-controller",
     "elasticity-strategies": "libs/elasticity-strategies",
     "horizontal-elasticity-strategy-controller": "apps/horizontal-elasticity-strategy-controller",
     "horizontal-vertical-elasticity-strategy-controller": "apps/horizontal-vertical-elasticity-strategy-controller",
+    "reactive-efficiency": "apps/reactive-efficiency",
     "slos": "libs/slos"
   }
 }
