@@ -36,6 +36,7 @@ spec:
           effect: NoSchedule
       containers:
         - image: polarissloc/efficiency-controller:latest
+          imagePullPolicy: Never
           name: slo-controller
           resources:
             limits:
