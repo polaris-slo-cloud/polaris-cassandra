@@ -1,0 +1,27 @@
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: ${config.cluster_name}
+  namespace: ${config.namespace}
+spec:
+  cassandra:
+    serverVersion: "4.0.6"
+    %{~ if config.enable_prometheus ~}
+    telemetry:
+      prometheus:
+        enabled: true
+    %{~ endif ~}
+    datacenters:
+      - metadata:
+          name: dc1
+        size: ${config.cluster_size}
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: local-storage
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: ${config.storage}Gi
+        stargate:
+          size: ${config.stargate_size}
