@@ -1,7 +1,7 @@
 locals {
   cluster_config = {
-    name                    = "polaris-testbed"
-    num_worker_nodes        = 2
+    name             = "polaris-testbed"
+    num_worker_nodes = 2
   }
 
   k8ssandra_config = {
