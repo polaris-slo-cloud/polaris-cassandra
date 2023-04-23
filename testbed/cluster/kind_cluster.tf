@@ -6,14 +6,11 @@ resource "kind_cluster" "this" {
     kind        = "Cluster"
     api_version = "kind.x-k8s.io/v1alpha4"
 
-    dynamic "node" {
-      for_each = range(local.cluster_config.num_control_plane_nodes)
-
-      content {
+   node {
         role = "control_plane"
 
         extra_mounts {
-          host_path      = "${path.module}/disks/control_plane${node.key}/"
+      host_path      = "${path.module}/disks/control_plane/"
           container_path = "/polaris-disks"
         }
       }
