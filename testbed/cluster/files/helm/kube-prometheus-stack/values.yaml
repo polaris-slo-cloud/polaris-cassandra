@@ -674,7 +674,7 @@ grafana:
   ingress:
     ## If true, Grafana Ingress will be created
     ##
-    enabled: false
+    enabled: true
 
     ## Annotations for Grafana Ingress
     ##
@@ -691,10 +691,11 @@ grafana:
     ##
     # hosts:
     #   - grafana.domain.com
-    hosts: []
+    hosts:
+      - localhost
 
     ## Path for grafana ingress
-    path: /
+    path: /grafana
 
     ## TLS configuration for grafana Ingress
     ## Secret must be manually created in the namespace
@@ -703,6 +704,15 @@ grafana:
     # - secretName: grafana-general-tls
     #   hosts:
     #   - grafana.example.com
+
+  grafana.ini:
+    security:
+      cookie_secure: false
+    server:
+      domain: localhost
+      protocol: http
+      root_url: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
+      serve_from_sub_path: true
 
   sidecar:
     dashboards:

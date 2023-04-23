@@ -1,3 +1,9 @@
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+}
+
 resource "helm_release" "metrics_server" {
   name       = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server"
@@ -8,12 +14,6 @@ resource "helm_release" "metrics_server" {
   set {
     name  = "args"
     value = "{--kubelet-insecure-tls}"
-  }
-}
-
-resource "kubernetes_namespace" "monitoring" {
-  metadata {
-    name = "monitoring"
   }
 }
 
