@@ -7,6 +7,14 @@ data "kubectl_path_documents" "persistant_volumes" {
   }
 }
 
+data "http" "nginx_ingress_manifest" {
+  url = "https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml"
+}
+
+data "kubectl_file_documents" "nginx_ingress" {
+  content = data.http.nginx_ingress_manifest.response_body
+}
+
 data "kubectl_path_documents" "k8ssandra_grafana_dashboards" {
   pattern = "${path.module}/files/k8ssandra-grafana-dashboards.yaml.tftpl"
 
