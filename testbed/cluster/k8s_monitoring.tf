@@ -19,5 +19,7 @@ resource "helm_release" "kube_prometheus_stack" {
   namespace  = lookup(kubernetes_namespace.this, "monitoring")["id"]
   values     = [file("files/helm/kube-prometheus-stack/values.yaml")]
 
-  values = [file("files/helm/kube-prometheus-stack/values.yaml")]
+  depends_on = [
+    kubectl_manifest.nginx_ingress
+  ]
 }

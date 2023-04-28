@@ -42,4 +42,9 @@ resource "kind_cluster" "this" {
       }
     }
   }
+
+  depends_on = [
+    null_resource.controle_plane_disk_folders,
+    null_resource.worker_disk_folders
+  ]
 }
