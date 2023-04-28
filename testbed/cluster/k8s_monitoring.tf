@@ -1,9 +1,3 @@
-resource "kubernetes_namespace" "monitoring" {
-  metadata {
-    name = "monitoring"
-  }
-}
-
 resource "helm_release" "metrics_server" {
   name       = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server"
@@ -22,7 +16,8 @@ resource "helm_release" "kube_prometheus_stack" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
   version    = "45.19.0"
-  namespace  = kubernetes_namespace.monitoring.metadata.0.name
+  namespace  = lookup(kubernetes_namespace.this, "monitoring")["id"]
+  values     = [file("files/helm/kube-prometheus-stack/values.yaml")]
 
   values = [file("files/helm/kube-prometheus-stack/values.yaml")]
 }

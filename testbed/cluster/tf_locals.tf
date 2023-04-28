@@ -4,6 +4,12 @@ locals {
     num_worker_nodes = 2
   }
 
+  namespaces = [
+    "monitoring",
+    "cert-manager",
+    "k8ssandra"
+  ]
+
   k8ssandra_config = {
     cluster_name      = "polaris-k8ssandra-cluster"
     cluster_size      = 1
