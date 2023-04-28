@@ -666,6 +666,9 @@ grafana:
 
   adminPassword: "polaris-@dm1n"
 
+  plugins:
+    - grafana-polystat-panel
+
   rbac:
     ## If true, Grafana PSPs will be created
     ##
