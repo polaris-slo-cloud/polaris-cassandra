@@ -20,7 +20,14 @@ resource "kubectl_manifest" "k8ssandra_cluster" {
   ]
 }
 
-resource "kubectl_manifest" "k8ssandra_grafana_dashboards" {
-  for_each  = data.kubectl_path_documents.k8ssandra_grafana_dashboards.manifests
-  yaml_body = each.value
+resource "kubectl_manifest" "k8ssandra_grafana_overview_dashboard" {
+  yaml_body = templatefile("${path.module}/files/k8ssandra-grafana-overview-dashboard.yaml.tftpl", {
+    namespace = lookup(kubernetes_namespace.this, "k8ssandra")["id"]
+  })
+}
+
+resource "kubectl_manifest" "k8ssandra_grafana_condensed_dashboard" {
+  yaml_body = templatefile("${path.module}/files/k8ssandra-grafana-condensed-dashboard.yaml.tftpl", {
+    namespace = lookup(kubernetes_namespace.this, "k8ssandra")["id"]
+  })
 }
