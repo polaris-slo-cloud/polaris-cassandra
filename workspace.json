@@ -2,11 +2,10 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "efficiency-controller": "apps/efficiency-controller",
     "elasticity-strategies": "libs/elasticity-strategies",
-    "horizontal-elasticity-strategy-controller": "apps/horizontal-elasticity-strategy-controller",
-    "horizontal-vertical-elasticity-strategy-controller": "apps/horizontal-vertical-elasticity-strategy-controller",
-    "reactive-efficiency": "apps/reactive-efficiency",
+    "k8ssandra-efficiency-controller": "apps/k8ssandra-efficiency-controller",
+    "k8ssandra-efficiency-slo-controller": "apps/k8ssandra-efficiency-slo-controller",
+    "k8ssandra-elasticity-strategy-controller": "apps/k8ssandra-elasticity-strategy-controller",
     "slos": "libs/slos"
   }
 }

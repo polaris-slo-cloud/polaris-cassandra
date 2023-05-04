@@ -23,6 +23,5 @@
     "build": {
       "dependsOn": ["^build"]
     }
-  },
-  "defaultProject": "horizontal-vertical-elasticity-strategy-controller"
+  }
 }
