@@ -30,7 +30,7 @@ resource "kind_cluster" "this" {
     }
 
     dynamic "node" {
-      for_each = range(local.cluster_config.num_worker_nodes)
+      for_each = { for index, node in local.cluster_config.worker_nodes: index => node }
 
       content {
         role = "worker"
@@ -38,6 +38,15 @@ resource "kind_cluster" "this" {
         extra_mounts {
           host_path      = "${path.module}/disks/worker${node.key}/"
           container_path = "/polaris-disks"
+        }
+
+        dynamic "extra_port_mappings" {
+          for_each = { for index, port_mapping in node.value.extra_port_mappings: index => port_mapping }
+
+          content {
+            container_port = extra_port_mappings.value.container_port
+            host_port = extra_port_mappings.value.host_port
+          }
         }
       }
     }

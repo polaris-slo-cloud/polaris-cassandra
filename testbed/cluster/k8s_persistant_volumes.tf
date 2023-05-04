@@ -5,7 +5,7 @@ resource "null_resource" "controle_plane_disk_folders" {
 }
 
 resource "null_resource" "worker_disk_folders" {
-  count = local.cluster_config.num_worker_nodes
+  count = length(local.cluster_config.worker_nodes)
 
   provisioner "local-exec" {
     command = "rm -rf ${path.module}/disks/worker${count.index} && mkdir -p ${path.module}/disks/worker${count.index}/{disk01,disk02,disk03,disk04,disk05}"
