@@ -19,6 +19,11 @@ resource "helm_release" "kube_prometheus_stack" {
   namespace  = lookup(kubernetes_namespace.this, "monitoring")["id"]
   values     = [file("files/helm/kube-prometheus-stack/values.yaml")]
 
+  set {
+    name = "prometheus.prometheusSpec.nodeSelector.kubernetes\\.io/hostname"
+    value = "${local.cluster_config.name}-worker"
+  }
+
   depends_on = [
     kubectl_manifest.nginx_ingress
   ]
