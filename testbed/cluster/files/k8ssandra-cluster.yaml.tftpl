@@ -11,6 +11,14 @@ spec:
       prometheus:
         enabled: true
     %{~ endif ~}
+    resources:
+      requests:
+        cpu: ${config.resources.requests.cpu}
+        memory: ${config.resources.requests.memory}
+      limits:
+        cpu: ${config.resources.limits.cpu}
+        memory: ${config.resources.limits.memory}
+    softPodAntiAffinity: true
     datacenters:
       - metadata:
           name: dc1
@@ -23,5 +31,7 @@ spec:
             resources:
               requests:
                 storage: ${config.storage}Gi
+        %{~ if config.stargate_size > 0 ~}
         stargate:
           size: ${config.stargate_size}
+        %{~ endif ~}
