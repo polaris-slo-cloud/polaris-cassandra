@@ -13,7 +13,8 @@ locals {
       {
         extra_port_mappings = []
       }
-    ]
+    ],
+    image = "kindest/node:v1.27.1@sha256:9915f5629ef4d29f35b478e819249e89cfaffcbfeebda4324e5c01d53d937b09"
   }
 
   namespaces = [

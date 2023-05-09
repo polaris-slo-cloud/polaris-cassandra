@@ -2,6 +2,8 @@ resource "kind_cluster" "this" {
   name           = local.cluster_config.name
   wait_for_ready = true
 
+  node_image = try(local.cluster_config.image, null)
+
   kind_config {
     kind        = "Cluster"
     api_version = "kind.x-k8s.io/v1alpha4"
