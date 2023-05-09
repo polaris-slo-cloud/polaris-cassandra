@@ -1,6 +1,7 @@
 import {
   ElasticityStrategy,
   ElasticityStrategyKind,
+  Resources,
   SloCompliance,
   SloTarget,
   initSelf,
@@ -33,12 +34,12 @@ export interface K8ssandraElasticityStrategyConfig {
   /**
    * The minimum resources a k8ssandra node should have.
    */
-  minResources?: object;
+  minResources?: Resources;
 
   /**
    * The maximum resources a k8ssandra node should have.
    */
-  maxResources?: object;
+  maxResources?: Resources;
 }
 
 /**
