@@ -65,6 +65,23 @@ rules:
 #   - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: k8ssandra
+  name: k8ssandra-full-access
+rules:
+  - apiGroups:
+    - k8ssandra.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+    - update
+    - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 # Optionally, we could create a RoleBinding and to scope the permissions to a specific namespace
 metadata:
@@ -77,3 +94,17 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: k8ssandra-elasticity-strategy-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: k8ssandra
+  name: k8ssandra-allow-read
+subjects:
+  - kind: ServiceAccount
+    name: k8ssandra-elasticity-strategy-controller
+    namespace: polaris
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k8ssandra-full-access

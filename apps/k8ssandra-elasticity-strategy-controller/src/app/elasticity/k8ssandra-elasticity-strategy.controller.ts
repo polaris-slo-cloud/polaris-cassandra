@@ -1,4 +1,5 @@
 import {
+  ApiObjectMetadata,
   DefaultStabilizationWindowTracker,
   Logger,
   OrchestratorClient,
@@ -10,6 +11,7 @@ import {
 import {
   K8ssandraElasticityStrategyConfig,
   K8ssandraElasticityStrategy,
+  K8ssandraCluster,
 } from '@nicokratky/elasticity-strategies';
 
 /** Tracked executions eviction interval of 20 minutes. */
@@ -52,7 +54,19 @@ export class K8ssandraElasticityStrategyController extends SloComplianceElastici
   async execute(
     elasticityStrategy: K8ssandraElasticityStrategy
   ): Promise<void> {
-    Logger.log("Executing elasticity strategy: ", elasticityStrategy);
+    Logger.log('Executing elasticity strategy: ', elasticityStrategy);
+
+    const k8c = await this.loadTarget(elasticityStrategy);
+
+    Logger.log('k8c:', k8c);
+    Logger.log('dcs:', k8c.spec.cassandra.datacenters);
+    Logger.log('resources:', k8c.spec.cassandra.resources);
+
+    k8c.spec.cassandra.resources.requests.memory = '333M';
+
+    await this.orchClient.update(k8c);
+
+    Logger.log('Successfully scaled.', elasticityStrategy, k8c);
   }
 
   onDestroy(): void {
@@ -65,5 +79,21 @@ export class K8ssandraElasticityStrategyController extends SloComplianceElastici
     this.stabilizationWindowTracker.removeElasticityStrategy(
       elasticityStrategy
     );
+  }
+
+  private async loadTarget(
+    elasticityStrategy: K8ssandraElasticityStrategy
+  ): Promise<K8ssandraCluster> {
+    const targetRef = elasticityStrategy.spec.targetRef;
+    const queryApiObject = new K8ssandraCluster({
+      metadata: new ApiObjectMetadata({
+        namespace: elasticityStrategy.metadata.namespace,
+        name: targetRef.name,
+      }),
+    });
+
+    const k8c = await this.orchClient.read(queryApiObject);
+
+    return k8c;
   }
 }
