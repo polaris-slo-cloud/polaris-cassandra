@@ -19,7 +19,8 @@ locals {
   namespaces = [
     "monitoring",
     "cert-manager",
-    "k8ssandra"
+    "k8ssandra",
+    "ingress-nginx",
   ]
 
   k8ssandra_config = {

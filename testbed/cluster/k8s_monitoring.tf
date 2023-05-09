@@ -25,6 +25,6 @@ resource "helm_release" "kube_prometheus_stack" {
   }
 
   depends_on = [
-    kubectl_manifest.nginx_ingress
+    helm_release.ingress_nginx
   ]
 }
