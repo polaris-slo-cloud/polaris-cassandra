@@ -38,25 +38,6 @@ provider "registry.terraform.io/hashicorp/helm" {
   ]
 }
 
-provider "registry.terraform.io/hashicorp/http" {
-  version = "3.2.1"
-  hashes = [
-    "h1:wKM96IefXoEIFZZEW0gzc1SV7GFZqvV8z72IMgma5/4=",
-    "zh:088b3b3128034485e11dff8da16e857d316fbefeaaf5bef24cceda34c6980641",
-    "zh:09ed1f2462ea4590b112e048c4af556f0b6eafc7cf2c75bb2ac21cd87ca59377",
-    "zh:39c6b0b4d3f0f65e783c467d3f634e2394820b8aef907fcc24493f21dcf73ca3",
-    "zh:47aab45327daecd33158a36c1a36004180a518bf1620cdd5cfc5e1fe77d5a86f",
-    "zh:4d70a990aa48116ab6f194eef393082c21cf58bece933b63575c63c1d2b66818",
-    "zh:65470c43fda950c7e9ac89417303c470146de984201fff6ef84299ea29e02d30",
-    "zh:78d5eefdd9e494defcb3c68d282b8f96630502cac21d1ea161f53cfe9bb483b3",
-    "zh:842b4dd63e438f5cd5fdfba1c09b8fdf268e8766e6690988ee24e8b25bfd9e8d",
-    "zh:a167a057f7e2d80c78d4b4057538588131fceb983d5c93b07675ad9eb1aa5790",
-    "zh:d0ba69b62b6db788cfe3cf8f7dc6e9a0eabe2927dc119d7fe3fe6573ee559e66",
-    "zh:e28d24c1d5ff24b1d1cc6f0074a1f41a6974f473f4ff7a37e55c7b6dca68308a",
-    "zh:fde8a50554960e5366fd0e1ca330a7c1d24ae6bbb2888137a5c83d83ce14fd18",
-  ]
-}
-
 provider "registry.terraform.io/hashicorp/kubernetes" {
   version     = "2.20.0"
   constraints = "~> 2.20.0"
@@ -97,15 +78,15 @@ provider "registry.terraform.io/hashicorp/null" {
 }
 
 provider "registry.terraform.io/tehcyx/kind" {
-  version     = "0.0.17"
-  constraints = "~> 0.0.17"
+  version     = "0.1.0"
+  constraints = "0.1.0"
   hashes = [
-    "h1:O2K4jtmX2vjE2LDQqPFfX7eSE0hQWpReudpio8FwlLc=",
-    "zh:0df083a684d820c20fa4432ef07a2358c47fbbae39cc96a402b808cb9b31d4ec",
-    "zh:462553d21d53f10f5fff5faa23e9ba15fb16ae14863d6b048f47a0bf4f80bc4c",
-    "zh:a52cff9e3a29e5beb2dc57b771513099b4faa697f5af71bf325a707665968e2d",
-    "zh:b9ace0fc0c35083974f0183b67b6304f07cc1c06bffb9d0b4023fe963ba2a7e1",
-    "zh:f0be464ea6fb948abbc05609b6a042a8772656df03fb86e55f7263566269b766",
-    "zh:fefabb7d9ff42df0c58da89bd33fbbf4e7e8ad2920ac0ea91a50e083c6153191",
+    "h1:KmwmaPg7lLpodGqixYN3CR2E/4opdQup88/Y1T/NevY=",
+    "zh:1122ab92cd0c6cc1d3ded41c590a16ca6a6f9f7c233f5804c1cb34eb951dfe40",
+    "zh:5145a48cbcd2512e508156e53a7c27c9232553e04d177f439f23bad9dd523815",
+    "zh:744786bdb1277c13f9489f060c7d5d5d95ec4acf28cb6b188e50124b542abe9f",
+    "zh:a512ac7cd801ed6471100b899d381b3f1031ec410a75f6752a9ffb6882b51ac7",
+    "zh:bcacf9a4d98eea3690c807ee80b25e00bbe883148fc66ae552722dad181c03f1",
+    "zh:cd3a504e81af0b8c69d961e2e376523663ea69c5d5198a6ba6e2240dbacce543",
   ]
 }

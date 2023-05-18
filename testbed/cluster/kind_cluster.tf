@@ -8,6 +8,10 @@ resource "kind_cluster" "this" {
     kind        = "Cluster"
     api_version = "kind.x-k8s.io/v1alpha4"
 
+    feature_gates = {
+      InPlacePodVerticalScaling = "true"
+    }
+
     node {
       role = "control_plane"
 
