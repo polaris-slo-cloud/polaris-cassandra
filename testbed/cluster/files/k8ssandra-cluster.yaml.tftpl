@@ -11,13 +11,19 @@ spec:
       prometheus:
         enabled: true
     %{~ endif ~}
+    %{~ if can(config.resources.requests) || can(config.resources.limits) ~}
     resources:
+      %{~ if can(config.resources.requests) ~}
       requests:
         cpu: ${config.resources.requests.cpu}
         memory: ${config.resources.requests.memory}
+      %{~ endif ~}
+      %{~ if can(config.resources.limits) ~}
       limits:
         cpu: ${config.resources.limits.cpu}
         memory: ${config.resources.limits.memory}
+      %{~ endif ~}
+    %{~ endif ~}
     softPodAntiAffinity: true
     datacenters:
       - metadata:
