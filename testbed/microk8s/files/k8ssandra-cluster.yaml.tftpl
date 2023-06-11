@@ -1,0 +1,42 @@
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: ${config.cluster_name}
+  namespace: ${config.namespace}
+spec:
+  cassandra:
+    serverVersion: "4.0.6"
+    %{~ if config.enable_prometheus ~}
+    telemetry:
+      prometheus:
+        enabled: true
+    %{~ endif ~}
+    %{~ if can(config.resources.requests) || can(config.resources.limits) ~}
+    resources:
+      %{~ if can(config.resources.requests) ~}
+      requests:
+        cpu: ${config.resources.requests.cpu}
+        memory: ${config.resources.requests.memory}
+      %{~ endif ~}
+      %{~ if can(config.resources.limits) ~}
+      limits:
+        cpu: ${config.resources.limits.cpu}
+        memory: ${config.resources.limits.memory}
+      %{~ endif ~}
+    %{~ endif ~}
+    softPodAntiAffinity: true
+    datacenters:
+      - metadata:
+          name: dc1
+        size: ${config.cluster_size}
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: ${config.storage}Gi
+        %{~ if config.stargate_size > 0 ~}
+        stargate:
+          size: ${config.stargate_size}
+        %{~ endif ~}
