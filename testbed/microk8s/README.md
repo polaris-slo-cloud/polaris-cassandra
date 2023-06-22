@@ -33,7 +33,7 @@ MicroK8s allows for easy installing of addons. For this project required addons 
 The observability addon takes a helm `values.yaml` file. Copy the file to the control plane node and enable the addon with:
 
 ```bash
-microk8s enable observability --kube-prometheus-stack-values=FILENAME
+microk8s enable observability -f values.yaml
 ```
 
 ## Applying Terraform
