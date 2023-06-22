@@ -3,6 +3,11 @@ resource "helm_release" "k8ssandra_operator" {
   repository = "https://helm.k8ssandra.io/stable"
   chart      = "k8ssandra-operator"
   namespace  = lookup(kubernetes_namespace.this, "k8ssandra")["id"]
+
+  set {
+    name  = "cass-operator.admissionWebhooks.enabled"
+    value = "false"
+  }
 }
 
 resource "kubectl_manifest" "k8ssandra_cluster" {
