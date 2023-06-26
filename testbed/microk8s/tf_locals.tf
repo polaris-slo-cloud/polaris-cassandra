@@ -1,6 +1,7 @@
 locals {
   namespaces = [
     "k8ssandra",
+    "monitoring",
   ]
 
   k8ssandra_config = {
