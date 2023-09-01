@@ -6,14 +6,14 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: k8ssandra-efficiency-controller
+  name: k8ssandra-efficiency-metric-controller
   namespace: polaris
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   # ClusterRoles are not namespaced
-  name: k8ssandra-efficiency-controller
+  name: k8ssandra-efficiency-metric-controller
 rules:
   # Allow reading all Composed Metric Mapping types
   # - apiGroups:
@@ -49,9 +49,9 @@ metadata:
   name: control-k8ssandraefficiencymetricmappings
 subjects:
   - kind: ServiceAccount
-    name: k8ssandra-efficiency-controller
+    name: k8ssandra-efficiency-metric-controller
     namespace: polaris
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: k8ssandra-efficiency-controller
+  name: k8ssandra-efficiency-metric-controller

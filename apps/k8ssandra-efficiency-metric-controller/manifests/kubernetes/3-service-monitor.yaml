@@ -2,9 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   namespace: polaris
-  name: k8ssandra-efficiency-controller
+  name: k8ssandra-efficiency-metric-controller
   labels:
-    component: k8ssandra-efficiency-controller
+    component: k8ssandra-efficiency-metric-controller
     tier: control-plane
     polaris-controller-type: composed-metric
     # If your Prometheus is configured with a selector for ServiceMonitors, add the required labels here
@@ -17,7 +17,7 @@ spec:
       - polaris
   selector:
     matchLabels:
-      component: k8ssandra-efficiency-controller
+      component: k8ssandra-efficiency-metric-controller
       tier: control-plane
       polaris-controller-type: composed-metric
   endpoints:
