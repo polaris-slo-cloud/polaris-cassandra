@@ -82,7 +82,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       avgMemoryUtilisationValue = avgMemoryUtilisationResult.value;
     }
 
-    return {
+    const efficiency = {
       timestamp,
       value: {
         avgCpuUtilisation: avgCpuUtilisationValue,
@@ -90,6 +90,10 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
         avgWritesTotal: avgWritesTotalValue,
       },
     };
+
+    Logger.log('Exposed metric: ', efficiency);
+
+    return efficiency;
   }
 
   private async getAverageWritesTotal() {
@@ -108,8 +112,6 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       });
 
     const writeEfficiencyQueryResult = await writeEfficiencyQuery.execute();
-
-    Logger.log('writeEfficiencyQuery result: ', writeEfficiencyQueryResult);
 
     return writeEfficiencyQueryResult;
   }
@@ -163,8 +165,6 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .averageByGroup(LabelGrouping.by('cluster'));
 
     const avgCpuUtilisationQueryResult = await avgCpuUtilisationQuery.execute();
-
-    Logger.log('avgCpuUtilisationQuery result: ', avgCpuUtilisationQueryResult);
 
     return avgCpuUtilisationQueryResult;
   }
@@ -290,8 +290,6 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .divideBy(nodeLimits)
       .maxByGroup();
     const memoryUtilisationResult = await memoryUtilisationQuery.execute();
-
-    Logger.log('memoryUtilisationResult: ', memoryUtilisationResult);
 
     return memoryUtilisationResult;
   }
