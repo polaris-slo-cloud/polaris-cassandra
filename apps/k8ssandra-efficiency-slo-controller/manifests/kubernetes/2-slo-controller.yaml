@@ -35,8 +35,7 @@ spec:
           operator: Exists
           effect: NoSchedule
       containers:
-        - image: polarissloc/k8ssandra-efficiency-slo-controller:latest
-          imagePullPolicy: Never
+        - image: nicokratky/k8ssandra-efficiency-slo-controller:latest
           name: slo-controller
           resources:
             limits:
