@@ -40,6 +40,8 @@ export interface K8ssandraElasticityStrategyConfig {
    * The maximum resources a k8ssandra node should have.
    */
   maxResources?: Resources;
+
+  tolerance?: number;
 }
 
 /**
