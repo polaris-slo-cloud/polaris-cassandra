@@ -36,7 +36,6 @@ spec:
           effect: NoSchedule
       containers:
         - image: nicokratky/k8ssandra-elasticity-strategy-controller:latest
-          imagePullPolicy: Never
           name: elasticity-controller
           resources:
             limits:
