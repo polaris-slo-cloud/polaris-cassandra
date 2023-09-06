@@ -23,10 +23,9 @@ import {
  * Represents the configuration options of the K8ssandraEfficiency SLO.
  */
 export interface K8ssandraEfficiencySloConfig {
-  /**
-   * The desired target read efficiency in the range between 0 and 100.
-   */
-  targetReadEfficiency: number;
+  targetCpuUtilisation: number;
+
+  targetMemoryUtilisation: number;
 
   /**
    * The desired target write efficiency in the range between 0 and 100.

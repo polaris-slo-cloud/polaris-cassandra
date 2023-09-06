@@ -2,7 +2,7 @@ kind: CustomResourceDefinition
 apiVersion: apiextensions.k8s.io/v1
 metadata:
   annotations:
-    polaris-slo-cloud.github.io/schema-gen-version: 0.5.0
+    polaris-slo-cloud.github.io/schema-gen-version: 0.6.1
   name: k8ssandraefficiencyslomappings.slo.polaris-slo-cloud.github.io
 spec:
   group: slo.polaris-slo-cloud.github.io
@@ -131,11 +131,11 @@ spec:
                 sloConfig:
                   type: object
                   properties:
-                    targetReadEfficiency:
+                    targetCpuUtilisation:
                       type: integer
-                      description: >-
-                        The desired target read efficiency in the range between
-                        0 and 100.
+                      format: int64
+                    targetMemoryUtilisation:
+                      type: integer
                       format: int64
                     targetWriteEfficiency:
                       type: integer
@@ -144,7 +144,8 @@ spec:
                         0 and 100.
                       format: int64
                   required:
-                    - targetReadEfficiency
+                    - targetCpuUtilisation
+                    - targetMemoryUtilisation
                     - targetWriteEfficiency
                   description: >-
                     Represents the configuration options of the

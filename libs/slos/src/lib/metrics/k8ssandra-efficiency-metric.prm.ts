@@ -17,15 +17,11 @@ import {
  * Represents the value of a K8ssandraEfficiency metric.
  */
 export interface K8ssandraEfficiency {
-  /**
-   * The current read efficiency in the range between 0 and 100.
-   */
-  readEfficiency: number;
+  avgCpuUtilisation: number;
 
-  /**
-   * The current write efficiency in the range between 0 and 100.
-   */
-  writeEfficiency: number;
+  avgMemoryUtilisation: number;
+
+  avgWritesTotal: number;
 }
 
 /**
