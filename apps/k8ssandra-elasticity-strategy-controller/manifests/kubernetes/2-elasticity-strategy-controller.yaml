@@ -35,7 +35,7 @@ spec:
           operator: Exists
           effect: NoSchedule
       containers:
-        - image: polarissloc/k8ssandra-elasticity-strategy-controller:latest
+        - image: nicokratky/k8ssandra-elasticity-strategy-controller:latest
           imagePullPolicy: Never
           name: elasticity-controller
           resources:
