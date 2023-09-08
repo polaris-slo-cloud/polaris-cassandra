@@ -5,13 +5,13 @@ import {
   Logger,
   OrchestratorClient,
   PolarisRuntime,
-  SloCompliance,
-  SloComplianceElasticityStrategyControllerBase,
   SloTarget,
   StabilizationWindowTracker,
 } from '@polaris-sloc/core';
 import { K8ssandraElasticityStrategyConfig } from './k8ssandra-elasticity-strategy.prm';
 import { K8ssandraCluster } from '../k8ssandra-cluster.prm';
+import { K8ssandraSloComplianceElasticityStrategyControllerBase } from './k8ssandra-compliance-elasticity-strategy-controller.base';
+import { K8ssandraSloCompliance } from '@nicokratky/slos';
 
 /** Tracked executions eviction interval of 20 minutes. */
 const EVICTION_INTERVAL_MSEC = 20 * 60 * 1000;
@@ -19,13 +19,13 @@ const EVICTION_INTERVAL_MSEC = 20 * 60 * 1000;
 export abstract class K8ssandraElasticityStrategyControllerBase<
   T extends SloTarget,
   C extends K8ssandraElasticityStrategyConfig
-> extends SloComplianceElasticityStrategyControllerBase<T, C> {
+> extends K8ssandraSloComplianceElasticityStrategyControllerBase<T, C> {
   /** The client for accessing orchestrator resources. */
   protected orchClient: OrchestratorClient;
 
   /** Tracks the stabilization windows of the ElasticityStrategy instances. */
   protected stabilizationWindowTracker: StabilizationWindowTracker<
-    ElasticityStrategy<SloCompliance, T, C>
+    ElasticityStrategy<K8ssandraSloCompliance, T, C>
   > = new DefaultStabilizationWindowTracker();
 
   private evictionInterval: NodeJS.Timeout;
@@ -40,10 +40,13 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
     );
   }
 
-  protected abstract updateK8ssandraCluster(elasticityStrategy: ElasticityStrategy<SloCompliance, T, C>, k8c: K8ssandraCluster): Promise<K8ssandraCluster>;
+  protected abstract updateK8ssandraCluster(
+    elasticityStrategy: ElasticityStrategy<K8ssandraSloCompliance, T, C>,
+    k8c: K8ssandraCluster
+  ): Promise<K8ssandraCluster>;
 
   async execute(
-    elasticityStrategy: ElasticityStrategy<SloCompliance, T, C>
+    elasticityStrategy: ElasticityStrategy<K8ssandraSloCompliance, T, C>
   ): Promise<void> {
     Logger.log('Executing elasticity strategy:', elasticityStrategy);
 
@@ -57,7 +60,6 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
     await this.orchClient.update(updatedK8c);
     this.stabilizationWindowTracker.trackExecution(elasticityStrategy);
     Logger.log('Successfully updated K8ssandraCluster:', updatedK8c);
-
   }
 
   onDestroy(): void {
@@ -65,7 +67,7 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
   }
 
   onElasticityStrategyDeleted(
-    elasticityStrategy: ElasticityStrategy<SloCompliance, T, C>
+    elasticityStrategy: ElasticityStrategy<K8ssandraSloCompliance, T, C>
   ): void {
     this.stabilizationWindowTracker.removeElasticityStrategy(
       elasticityStrategy
@@ -73,7 +75,7 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
   }
 
   private async loadTarget(
-    elasticityStrategy: ElasticityStrategy<SloCompliance, T, C>
+    elasticityStrategy: ElasticityStrategy<K8ssandraSloCompliance, T, C>
   ): Promise<K8ssandraCluster> {
     const targetRef = elasticityStrategy.spec.targetRef;
     const queryApiObject = new K8ssandraCluster({
@@ -107,4 +109,3 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
     return k8c;
   }
 }
-

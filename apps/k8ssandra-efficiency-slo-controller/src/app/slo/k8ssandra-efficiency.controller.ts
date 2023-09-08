@@ -3,6 +3,7 @@ import {
   K8ssandraEfficiencyMetric,
   K8ssandraEfficiencyParams,
   K8ssandraEfficiencySloConfig,
+  K8ssandraSloCompliance,
 } from '@nicokratky/slos';
 import {
   ComposedMetricSource,
@@ -11,7 +12,6 @@ import {
   ObservableOrPromise,
   OrchestratorGateway,
   ServiceLevelObjective,
-  SloCompliance,
   SloMapping,
   SloOutput,
   createOwnerReference,
@@ -24,15 +24,19 @@ import { of } from 'rxjs';
  * ToDo: Change SloOutput type if necessary.
  */
 export class K8ssandraEfficiencySlo
-  implements ServiceLevelObjective<K8ssandraEfficiencySloConfig, SloCompliance>
+  implements
+    ServiceLevelObjective<K8ssandraEfficiencySloConfig, K8ssandraSloCompliance>
 {
-  sloMapping: SloMapping<K8ssandraEfficiencySloConfig, SloCompliance>;
+  sloMapping: SloMapping<K8ssandraEfficiencySloConfig, K8ssandraSloCompliance>;
 
   private metricsSource: MetricsSource;
   private efficiencyMetricSource: ComposedMetricSource<K8ssandraEfficiency>;
 
   configure(
-    sloMapping: SloMapping<K8ssandraEfficiencySloConfig, SloCompliance>,
+    sloMapping: SloMapping<
+      K8ssandraEfficiencySloConfig,
+      K8ssandraSloCompliance
+    >,
     metricsSource: MetricsSource,
     orchestrator: OrchestratorGateway
   ): ObservableOrPromise<void> {
@@ -53,13 +57,14 @@ export class K8ssandraEfficiencySlo
     return of(undefined);
   }
 
-  evaluate(): ObservableOrPromise<SloOutput<SloCompliance>> {
-    Logger.log("Evaluating SLO compliance");
+  evaluate(): ObservableOrPromise<SloOutput<K8ssandraSloCompliance>> {
+    Logger.log('Evaluating SLO compliance');
 
     return this.calculateSloCompliance().then((sloCompliance) => ({
       sloMapping: this.sloMapping,
       elasticityStrategyParams: {
-        currSloCompliancePercentage: sloCompliance,
+        currVerticalSloCompliancePercentage: sloCompliance,
+        currHorizontalSloCompliancePercentange: sloCompliance,
       },
     }));
   }

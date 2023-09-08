@@ -1,13 +1,13 @@
 import {
   ObjectKind,
   PolarisType,
-  SloCompliance,
   SloMappingBase,
   SloMappingInitData,
   SloMappingSpecBase,
   SloTarget,
   initSelf,
 } from '@polaris-sloc/core';
+import { K8ssandraSloCompliance } from '../compliance/k8ssandra-compliance.prm';
 
 // ToDo after code generation:
 // - Add configuration parameters to the K8ssandraEfficiencySloConfig interface.
@@ -40,7 +40,7 @@ export class K8ssandraEfficiencySloMappingSpec extends SloMappingSpecBase<
   // The SLO's configuration.
   K8ssandraEfficiencySloConfig,
   // The output type of the SLO.
-  SloCompliance,
+  K8ssandraSloCompliance,
   // The type of target(s) that the SLO can be applied to.
   SloTarget
 > {}

@@ -1,8 +1,8 @@
+import { K8ssandraSloCompliance } from '@nicokratky/slos';
 import {
   ElasticityStrategy,
   ElasticityStrategyKind,
   Resources,
-  SloCompliance,
   SloTarget,
   initSelf,
 } from '@polaris-sloc/core';
@@ -40,15 +40,13 @@ export interface K8ssandraElasticityStrategyConfig {
    * The maximum resources a k8ssandra node should have.
    */
   maxResources?: Resources;
-
-  tolerance?: number;
 }
 
 /**
  * Denotes the elasticity strategy kind for the K8ssandraElasticityStrategy.
  */
 export class K8ssandraElasticityStrategyKind extends ElasticityStrategyKind<
-  SloCompliance,
+  K8ssandraSloCompliance,
   SloTarget
 > {
   constructor() {
@@ -64,7 +62,7 @@ export class K8ssandraElasticityStrategyKind extends ElasticityStrategyKind<
  * Defines the K8ssandraElasticityStrategy.
  */
 export class K8ssandraElasticityStrategy extends ElasticityStrategy<
-  SloCompliance,
+  K8ssandraSloCompliance,
   SloTarget,
   K8ssandraElasticityStrategyConfig
 > {

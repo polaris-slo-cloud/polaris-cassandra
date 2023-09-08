@@ -1,7 +1,6 @@
 import {
   ElasticityStrategy,
   Logger,
-  SloCompliance,
   SloTarget,
 } from '@polaris-sloc/core';
 import {
@@ -9,6 +8,7 @@ import {
   K8ssandraCluster,
   K8ssandraElasticityStrategyControllerBase,
 } from '@nicokratky/elasticity-strategies';
+import { K8ssandraSloCompliance } from '@nicokratky/slos';
 
 export class K8ssandraElasticityStrategyController extends K8ssandraElasticityStrategyControllerBase<
   SloTarget,
@@ -16,7 +16,7 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
 > {
   protected updateK8ssandraCluster(
     elasticityStrategy: ElasticityStrategy<
-      SloCompliance,
+      K8ssandraSloCompliance,
       SloTarget,
       K8ssandraElasticityStrategyConfig
     >,
