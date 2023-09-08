@@ -23,7 +23,7 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
     k8c: K8ssandraCluster
   ): Promise<K8ssandraCluster> {
 
-    Logger.log("uppdateK8ssandraCluster called, doing nothing for now");
+    Logger.log("updateK8ssandraCluster called, doing nothing for now");
 
     return Promise.resolve(k8c);
   }
