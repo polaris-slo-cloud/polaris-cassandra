@@ -70,13 +70,13 @@ export class K8ssandraEfficiencySlo
   }
 
   private async calculateSloCompliance(): Promise<number> {
-    Logger.log("Calculating SLO compliance");
+    Logger.log('Calculating SLO compliance');
 
     const currentEfficiency = await this.efficiencyMetricSource
       .getCurrentValue()
       .toPromise();
 
-    Logger.log("Current efficiency: ", currentEfficiency);
+    Logger.log('Current efficiency: ', currentEfficiency);
 
     if (!currentEfficiency) {
       Logger.log('Obtaining efficiency metric returned: ', currentEfficiency);
