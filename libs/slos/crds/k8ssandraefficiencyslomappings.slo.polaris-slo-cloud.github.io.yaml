@@ -143,6 +143,14 @@ spec:
                         The desired target write efficiency in the range between
                         0 and 100.
                       format: int64
+                    tolerance:
+                      type: integer
+                      description: >-
+                        Specifies the tolerance within which no scaling will be
+                        performed
+                      minimum: 0
+                      default: 10
+                      format: int64
                   required:
                     - targetCpuUtilisation
                     - targetMemoryUtilisation

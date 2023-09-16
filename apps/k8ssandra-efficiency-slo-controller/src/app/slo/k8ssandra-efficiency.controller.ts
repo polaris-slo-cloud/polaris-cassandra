@@ -72,6 +72,7 @@ export class K8ssandraEfficiencySlo
       elasticityStrategyParams: {
         currVerticalSloCompliancePercentage: verticalCompliance,
         currHorizontalSloCompliancePercentange: horizontalCompliance,
+        tolerance: this.sloMapping.spec.sloConfig.tolerance
       },
     };
   }

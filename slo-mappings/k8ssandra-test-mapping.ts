@@ -22,6 +22,7 @@ export default new K8ssandraEfficiencySloMapping({
       targetCpuUtilisation: 60,
       targetMemoryUtilisation: 50,
       targetWriteEfficiency: 60,
+      tolerance: 15,
     },
     staticElasticityStrategyConfig: {
       maxNodes: 3,
