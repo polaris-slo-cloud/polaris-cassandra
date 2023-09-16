@@ -57,34 +57,41 @@ export class K8ssandraEfficiencySlo
     return of(undefined);
   }
 
-  evaluate(): ObservableOrPromise<SloOutput<K8ssandraSloCompliance>> {
+  async evaluate(): Promise<SloOutput<K8ssandraSloCompliance>> {
     Logger.log('Evaluating SLO compliance');
 
-    return this.calculateSloCompliance().then((sloCompliance) => ({
+    const sample = await this.efficiencyMetricSource.getCurrentValue().toPromise();
+
+    Logger.log('current sample: ', sample);
+
+    const verticalCompliance = this.calculateVerticalSloCompliance(sample.value);
+    const horizontalCompliance = this.calculateHorizontalSloCompliance(sample.value);
+
+    return {
       sloMapping: this.sloMapping,
       elasticityStrategyParams: {
-        currVerticalSloCompliancePercentage: sloCompliance,
-        currHorizontalSloCompliancePercentange: sloCompliance,
+        currVerticalSloCompliancePercentage: verticalCompliance,
+        currHorizontalSloCompliancePercentange: horizontalCompliance,
       },
-    }));
+    };
   }
 
-  private async calculateSloCompliance(): Promise<number> {
-    Logger.log('Calculating SLO compliance');
+  private calculateVerticalSloCompliance(sample: K8ssandraEfficiency): number {
+    const cpuTarget = this.sloMapping.spec.sloConfig.targetCpuUtilisation;
+    const memTarget = this.sloMapping.spec.sloConfig.targetMemoryUtilisation;
 
-    const currentEfficiency = await this.efficiencyMetricSource
-      .getCurrentValue()
-      .toPromise();
+    const cpuCompliance = Math.ceil((cpuTarget / (sample.avgCpuUtilisation * 100)) * 100);
+    const memCompliance = Math.ceil((memTarget / (sample.avgMemoryUtilisation * 100)) * 100);
 
-    Logger.log('Current efficiency: ', currentEfficiency);
+    Logger.log('cpuCompliance: ', cpuCompliance);
+    Logger.log('memCompliance: ', memCompliance);
 
-    if (!currentEfficiency) {
-      Logger.log('Obtaining efficiency metric returned: ', currentEfficiency);
-      return 100;
-    }
+    return Math.ceil((cpuCompliance + memCompliance) / 2);
+  }
 
-    // TODO calculate compliance
+  private calculateHorizontalSloCompliance(sample: K8ssandraEfficiency): number {
 
-    return 50;
+
+    return 50; // TODO
   }
 }
