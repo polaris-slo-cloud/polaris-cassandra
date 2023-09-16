@@ -17,6 +17,11 @@ resource "kubectl_manifest" "k8ssandra_cluster" {
     })
   })
 
+  ignore_fields = [
+    "spec.cassandra.resources",
+    "spec.cassandra.datacenters.0.size"
+  ]
+
   depends_on = [
     helm_release.k8ssandra_operator
   ]

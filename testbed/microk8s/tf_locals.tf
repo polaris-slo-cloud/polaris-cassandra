@@ -6,7 +6,7 @@ locals {
 
   k8ssandra_config = {
     cluster_name           = "polaris-k8ssandra-cluster"
-    cluster_size           = 1
+    cluster_size           = 2
     storage                = 3
     soft_pod_anti_affinity = true
     enable_prometheus      = true
