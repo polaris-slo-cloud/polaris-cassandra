@@ -17,13 +17,6 @@ import {
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-// ToDo:
-// 1. Adapt the list of `supportedSloTargetTypes` in `K8ssandraEfficiencyMetricSourceFactory` (see k8ssandra-efficiency.metric-source.factory.ts).
-// 2. Adapt the `K8ssandraEfficiencyMetricSourceFactory.metricSourceName`, if needed (e.g., if there are multiple sources for K8ssandraEfficiencyMetric that differ
-//    based on the supported SloTarget types).
-// 3. Implement `K8ssandraEfficiencyMetricSource.getValueStream()` to compute the metric.
-// 4. Adapt the `release` label in `../../../../manifests/kubernetes/3-service-monitor.yaml` to ensure that Prometheus will scrape this controller.
-
 /**
  * Computes the `K8ssandraEfficiency` composed metric.
  */

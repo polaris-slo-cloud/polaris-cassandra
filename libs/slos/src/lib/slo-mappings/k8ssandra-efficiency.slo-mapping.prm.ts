@@ -9,16 +9,6 @@ import {
 } from '@polaris-sloc/core';
 import { K8ssandraSloCompliance } from '../compliance/k8ssandra-compliance.prm';
 
-// ToDo after code generation:
-// - Add configuration parameters to the K8ssandraEfficiencySloConfig interface.
-// - If the SLO does not produce SloCompliance objects as output,
-//   adapt the second generic parameter of K8ssandraEfficiencySloMappingSpec accordingly.
-// - If the SLO should operate on a subtype of SloTarget,
-//   adapt the third generic parameter of K8ssandraEfficiencySloMappingSpec accordingly.
-// - (optional) Replace the ObjectKind.group in the constructor of K8ssandraEfficiencySloMapping with your own.
-//   If you change the group name, ensure that you also accordingly adapt the `1-rbac.yaml` files of all
-//   SLO controllers that need to write this SloMapping CRD.
-
 /**
  * Represents the configuration options of the K8ssandraEfficiency SLO.
  */
