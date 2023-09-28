@@ -6,19 +6,19 @@ locals {
 
   k8ssandra_config = {
     cluster_name           = "polaris-k8ssandra-cluster"
-    cluster_size           = 2
+    cluster_size           = 1
     storage                = 3
     soft_pod_anti_affinity = true
     enable_prometheus      = true
     stargate_size          = 0
     resources = {
       requests = {
-        cpu    = 1
-        memory = "1G"
+        cpu    = "100m"
+        memory = "1000Mi"
       }
       limits = {
-        cpu    = 2
-        memory = "4G"
+        cpu    = "500m"
+        memory = "6000Mi"
       }
     }
   }
