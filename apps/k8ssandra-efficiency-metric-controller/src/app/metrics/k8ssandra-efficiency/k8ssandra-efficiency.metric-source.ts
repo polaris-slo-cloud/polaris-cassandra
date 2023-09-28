@@ -96,7 +96,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .filterOnLabel({
         label: 'cassandra_datastax_com_cluster',
         operator: LabelComparisonOperator.Equal,
-        comparisonValue: 'polaris-k8ssandra-cluster',
+        comparisonValue: this.params.sloTarget.name,
       })
       .filterOnLabel({
         label: 'request_type',
@@ -130,7 +130,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .filterOnLabel({
         label: 'cluster',
         operator: LabelComparisonOperator.Equal,
-        comparisonValue: 'polaris-k8ssandra-cluster',
+        comparisonValue: this.params.sloTarget.name,
       })
       .rate()
       .sumByGroup(LabelGrouping.by('cluster', 'dc', 'rack', 'instance'));
@@ -148,7 +148,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .filterOnLabel({
         label: 'cluster',
         operator: LabelComparisonOperator.Equal,
-        comparisonValue: 'polaris-k8ssandra-cluster',
+        comparisonValue: this.params.sloTarget.name,
       })
       .rate()
       .sumByGroup(LabelGrouping.by('cluster', 'dc', 'rack', 'instance'));
@@ -198,7 +198,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .filterOnLabel({
         label: 'namespace',
         operator: LabelComparisonOperator.Equal,
-        comparisonValue: 'k8ssandra',
+        comparisonValue: this.params.namespace,
       })
       .multiplyBy(
         this.metricsSource
@@ -212,12 +212,12 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
           .filterOnLabel({
             label: 'namespace',
             operator: LabelComparisonOperator.Equal,
-            comparisonValue: 'k8ssandra',
+            comparisonValue: this.params.namespace,
           })
           .filterOnLabel({
             label: 'workload',
-            operator: LabelComparisonOperator.Equal,
-            comparisonValue: 'polaris-k8ssandra-cluster-dc1-default-sts',
+            operator: LabelComparisonOperator.RegexMatch,
+            comparisonValue: this.params.sloTarget.name + '-.*-sts',
           })
           .filterOnLabel({
             label: 'workload_type',
@@ -244,7 +244,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .filterOnLabel({
         label: 'namespace',
         operator: LabelComparisonOperator.Equal,
-        comparisonValue: 'k8ssandra',
+        comparisonValue: this.params.namespace,
       })
       .filterOnLabel({
         label: 'resource',
@@ -263,12 +263,12 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
           .filterOnLabel({
             label: 'namespace',
             operator: LabelComparisonOperator.Equal,
-            comparisonValue: 'k8ssandra',
+            comparisonValue: this.params.namespace,
           })
           .filterOnLabel({
             label: 'workload',
-            operator: LabelComparisonOperator.Equal,
-            comparisonValue: 'polaris-k8ssandra-cluster-dc1-default-sts',
+            operator: LabelComparisonOperator.RegexMatch,
+            comparisonValue: this.params.sloTarget.name + '-.*-sts',
           })
           .filterOnLabel({
             label: 'workload_type',
