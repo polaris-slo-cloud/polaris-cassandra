@@ -57,6 +57,12 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
 
     let updatedK8c = await this.updateK8ssandraCluster(elasticityStrategy, k8c);
 
+    if (updatedK8c == null) {
+      // can't update K8ssandraCluster
+      // probably outside stabilization window
+      return;
+    }
+
     updatedK8c = this.normalize(k8c, elasticityStrategy.spec.staticConfig);
     updatedK8c = this.normalizeResources(k8c);
 
