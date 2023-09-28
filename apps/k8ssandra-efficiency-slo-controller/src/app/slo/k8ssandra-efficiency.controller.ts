@@ -64,34 +64,41 @@ export class K8ssandraEfficiencySlo
 
     Logger.log('current sample: ', sample);
 
-    const verticalCompliance = this.calculateVerticalSloCompliance(sample.value);
+    const cpuCompliance = this.calculateCpuSloCompliance(sample.value);
+    const memoryCompliance = this.calculateMemorySloCompliance(sample.value);
     const horizontalCompliance = this.calculateHorizontalSloCompliance(sample.value);
 
     return {
       sloMapping: this.sloMapping,
       elasticityStrategyParams: {
-        currVerticalSloCompliancePercentage: verticalCompliance,
+        currCpuSloCompliancePercentage: cpuCompliance,
+        currMemorySloCompliancePercentage: memoryCompliance,
         currHorizontalSloCompliancePercentange: horizontalCompliance,
         tolerance: this.sloMapping.spec.sloConfig.tolerance
       },
     };
   }
 
-  private calculateVerticalSloCompliance(sample: K8ssandraEfficiency): number {
+  private calculateCpuSloCompliance(sample: K8ssandraEfficiency): number {
     const cpuTarget = this.sloMapping.spec.sloConfig.targetCpuUtilisation;
-    const memTarget = this.sloMapping.spec.sloConfig.targetMemoryUtilisation;
-
     const cpuCompliance = Math.ceil((cpuTarget / (sample.avgCpuUtilisation * 100)) * 100);
-    const memCompliance = Math.ceil((memTarget / (sample.avgMemoryUtilisation * 100)) * 100);
-
     Logger.log('cpuCompliance: ', cpuCompliance);
-    Logger.log('memCompliance: ', memCompliance);
+    return cpuCompliance;
+  }
 
-    return Math.ceil((cpuCompliance + memCompliance) / 2);
+  private calculateMemorySloCompliance(sample: K8ssandraEfficiency): number {
+    const memTarget = this.sloMapping.spec.sloConfig.targetMemoryUtilisation;
+    const memCompliance = Math.ceil((memTarget / (sample.avgMemoryUtilisation * 100)) * 100);
+    Logger.log('memCompliance: ', memCompliance);
+    return memCompliance;
   }
 
   private calculateHorizontalSloCompliance(sample: K8ssandraEfficiency): number {
+    // const target = this.sloMapping.spec.sloConfig.targetWriteEfficiency;
 
+    // const compliance = Math.ceil((target / sample.avgWritesTotal) * 100);
+
+    // return compliance;
 
     return 50; // TODO
   }

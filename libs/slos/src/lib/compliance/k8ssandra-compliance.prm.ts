@@ -1,7 +1,9 @@
 import { initSelf } from '@polaris-sloc/core';
 
 export class K8ssandraSloCompliance {
-  currVerticalSloCompliancePercentage: number;
+  currCpuSloCompliancePercentage: number;
+
+  currMemorySloCompliancePercentage: number;
 
   currHorizontalSloCompliancePercentange: number;
 

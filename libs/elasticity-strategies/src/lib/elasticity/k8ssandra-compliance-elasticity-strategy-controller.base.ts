@@ -3,6 +3,7 @@ import {
   SloTarget,
   ElasticityStrategyController,
   ElasticityStrategy,
+  Logger,
 } from '@polaris-sloc/core';
 
 /**
@@ -34,12 +35,17 @@ export abstract class K8ssandraSloComplianceElasticityStrategyControllerBase<
     const upperBound = 100 + tolerance;
 
     const verticalActionNeeded =
-      sloCompliance.currVerticalSloCompliancePercentage < lowerBound ||
-      sloCompliance.currVerticalSloCompliancePercentage > upperBound;
+      sloCompliance.currCpuSloCompliancePercentage < lowerBound ||
+      sloCompliance.currCpuSloCompliancePercentage > upperBound ||
+      sloCompliance.currMemorySloCompliancePercentage < lowerBound ||
+      sloCompliance.currMemorySloCompliancePercentage > upperBound;
 
     const horizontalActionNeeded =
       sloCompliance.currHorizontalSloCompliancePercentange < lowerBound ||
       sloCompliance.currHorizontalSloCompliancePercentange > upperBound;
+
+    Logger.log('vertical action needed: ', verticalActionNeeded);
+    Logger.log('horizontal action needed: ', horizontalActionNeeded);
 
     return Promise.resolve(verticalActionNeeded || horizontalActionNeeded);
   }

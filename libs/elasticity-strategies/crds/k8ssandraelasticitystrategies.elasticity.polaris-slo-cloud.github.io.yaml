@@ -82,7 +82,10 @@ spec:
                 sloOutputParams:
                   type: object
                   properties:
-                    currVerticalSloCompliancePercentage:
+                    currCpuSloCompliancePercentage:
+                      type: integer
+                      format: int64
+                    currMemorySloCompliancePercentage:
                       type: integer
                       format: int64
                     currHorizontalSloCompliancePercentange:
@@ -92,7 +95,8 @@ spec:
                       type: integer
                       format: int64
                   required:
-                    - currVerticalSloCompliancePercentage
+                    - currCpuSloCompliancePercentage
+                    - currMemorySloCompliancePercentage
                     - currHorizontalSloCompliancePercentange
                 stabilizationWindow:
                   type: object
