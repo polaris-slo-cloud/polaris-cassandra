@@ -27,5 +27,9 @@ export default new K8ssandraEfficiencySloMapping({
     staticElasticityStrategyConfig: {
       maxNodes: 3,
     },
+    stabilizationWindow: {
+      scaleDownSeconds: 600, // default = 300
+      scaleUpSeconds: 600, // default = 60
+    },
   }),
 });

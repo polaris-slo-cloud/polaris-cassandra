@@ -1,5 +1,6 @@
 import {
   ApiObject,
+  ContainerResources,
   ObjectKind,
   PolarisType,
   initSelf,
@@ -37,17 +38,11 @@ export class CassandraSpec {
      * Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it
      * defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value.
      */
-    requests?: {
-      cpu: string;
-      memory: string;
-    };
+    requests?: ContainerResources;
     /**
      * Limits describes the maximum amount of compute resources allowed.
      */
-    limits?: {
-      cpu: string;
-      memory: string;
-    };
+    limits?: ContainerResources;
   };
 }
 
