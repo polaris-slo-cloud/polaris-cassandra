@@ -39,6 +39,7 @@ export class CassandraSpec {
      * defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value.
      */
     requests?: ContainerResources;
+
     /**
      * Limits describes the maximum amount of compute resources allowed.
      */
