@@ -110,16 +110,31 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
   }
 
   private async getAverageCpuUtilisation() {
-    // avg by (cluster) (1 - (sum by (cluster, dc, rack, instance) (rate(collectd_cpu_total{type="idle", cluster="polaris-k8ssandra-cluster", dc=~".*", rack=~".*", instance=~".*"}[1m:30s])) / sum by (cluster, dc, rack, instance) (rate(collectd_cpu_total{cluster="polaris-k8ssandra-cluster", dc=~".*", rack=~".*", instance=~".*"}[1m:30s]))))
+    // avg by (cluster) (
+    //     1
+    //   -
+    //     (
+    //         sum by (cluster, dc, rack, instance) (
+    //           rate(
+    //             collectd_cpu_total{cluster="polaris-k8ssandra-cluster",dc=~".*",instance=~".*",rack=~".*",type="idle"}[10m]
+    //           )
+    //         )
+    //       /
+    //         sum by (cluster, dc, rack, instance) (
+    //           rate(
+    //             collectd_cpu_total{cluster="polaris-k8ssandra-cluster",dc=~".*",instance=~".*",rack=~".*"}[10m]
+    //           )
+    //         )
+    //     )
+    // )
 
     const idleCpuUsageQuery = this.metricsSource
       .getTimeSeriesSource()
       .select(
         'collectd',
         'cpu_total',
-        TimeRange.fromDurationWithOffset(
-          Duration.fromSeconds(30),
-          Duration.fromSeconds(30)
+        TimeRange.fromDuration(
+          Duration.fromSeconds(this.params.cpuUtilisationTimeRange)
         )
       )
       .filterOnLabel({

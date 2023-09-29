@@ -44,6 +44,7 @@ export class K8ssandraEfficiencySlo
     this.metricsSource = metricsSource;
 
     const efficiencyParams: K8ssandraEfficiencyParams = {
+      cpuUtilisationTimeRange: 600, // TODO move to static config?
       namespace: sloMapping.metadata.namespace,
       sloTarget: sloMapping.spec.targetRef,
       owner: createOwnerReference(sloMapping),

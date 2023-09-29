@@ -68,7 +68,15 @@ spec:
                         https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
                 metricConfig:
                   type: object
-                  additionalProperties: false
+                  properties:
+                    cpuUtilisationTimeRange:
+                      type: integer
+                      description: >-
+                        The time duration that is used for calculating the
+                        average CPU utilisation in seconds.
+                      format: int64
+                  required:
+                    - cpuUtilisationTimeRange
                   description: >-
                     Limited alternative for `Omit<T, K>` that provides a
                     workaround for an issue with ts-json-schema-generator.

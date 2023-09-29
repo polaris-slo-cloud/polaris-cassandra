@@ -20,8 +20,12 @@ export interface K8ssandraEfficiency {
 /**
  * The parameters for retrieving the K8ssandraEfficiency metric.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface K8ssandraEfficiencyParams extends ComposedMetricParams {}
+export interface K8ssandraEfficiencyParams extends ComposedMetricParams {
+  /**
+   * The time duration that is used for calculating the average CPU utilisation in seconds.
+   */
+  cpuUtilisationTimeRange: number;
+}
 
 /**
  * Represents the type of a generic cost efficiency metric.
