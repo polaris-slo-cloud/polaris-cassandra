@@ -66,7 +66,7 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
     });
 
     if (
-      this.checkIfOutsideStabilizationWindow(
+      !this.checkIfOutsideStabilizationWindow(
         elasticityStrategy,
         resources,
         scaledResources
