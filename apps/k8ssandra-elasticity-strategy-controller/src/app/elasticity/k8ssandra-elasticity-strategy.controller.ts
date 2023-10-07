@@ -46,7 +46,7 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
 
     const memoryComplianceDiff =
       sloOutputParams.currMemorySloCompliancePercentage - 100;
-    const memoryScalePercent = (100 + memoryComplianceDiff) / 100;
+    const memoryScalePercent = (100 - memoryComplianceDiff) / 100;
 
     Logger.log('memoryComplianceDiff', memoryComplianceDiff);
     Logger.log('memoryScalePercent', memoryScalePercent);
