@@ -1,6 +1,5 @@
 import {
   ApiObjectMetadata,
-  ContainerResources,
   DefaultStabilizationWindowTracker,
   ElasticityStrategy,
   Logger,
@@ -53,6 +52,7 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
 
     const k8c = await this.loadTarget(elasticityStrategy);
     Logger.log('Loaded K8ssandraCluster:', k8c);
+    Logger.log('Resources:', k8c.spec.cassandra.resources);
 
     let updatedK8c = await this.updateK8ssandraCluster(elasticityStrategy, k8c);
 
@@ -63,14 +63,12 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
     }
 
     updatedK8c = this.normalize(k8c, elasticityStrategy.spec.staticConfig);
-    updatedK8c = this.normalizeResources(k8c);
 
     await this.orchClient.update(updatedK8c);
     this.stabilizationWindowTracker.trackExecution(elasticityStrategy);
-    Logger.log(
-      'Successfully updated K8ssandraCluster:',
-      JSON.stringify(updatedK8c, null, 2)
-    );
+
+    Logger.log('Successfully updated K8ssandraCluster:', updatedK8c);
+    Logger.log('New resources:', updatedK8c.spec.cassandra.resources);
   }
 
   onDestroy(): void {
@@ -98,51 +96,6 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
 
     const k8c = await this.orchClient.read(queryApiObject);
 
-    // parse limits to ContainerResources
-    // TODO make nice
-
-    const limitMemory = k8c.spec.cassandra.resources.limits['memory'] as string;
-    const limitCpu = k8c.spec.cassandra.resources.limits['cpu'] as string;
-
-    Logger.log(limitMemory);
-    Logger.log(limitCpu);
-
-    const limitMemoryUnit = limitMemory.slice(-2);
-    const limitCpuUnit = limitCpu.slice(-1);
-
-    if (limitMemoryUnit == 'Mi' && limitCpuUnit == 'm') {
-      // yay
-
-      const limits = new ContainerResources({
-        memoryMiB: parseInt(limitMemory.slice(0, -2)),
-        milliCpu: parseInt(limitCpu.slice(0, -1)),
-      });
-
-      k8c.spec.cassandra.resources.limits = limits;
-    }
-
-    // parse requests to ContainerResources
-    // TODO make nice
-
-    const requestsMemory = k8c.spec.cassandra.resources.requests[
-      'memory'
-    ] as string;
-    const requestsCpu = k8c.spec.cassandra.resources.requests['cpu'] as string;
-
-    const requestsMemoryUnit = requestsMemory.slice(-2);
-    const requestsCpuUnit = requestsCpu.slice(-1);
-
-    if (requestsMemoryUnit == 'Mi' && requestsCpuUnit == 'm') {
-      // yay
-
-      const requests = new ContainerResources({
-        memoryMiB: parseInt(requestsMemory.slice(0, -2)),
-        milliCpu: parseInt(requestsCpu.slice(0, -1)),
-      });
-
-      k8c.spec.cassandra.resources.requests = requests;
-    }
-
     return k8c;
   }
 
@@ -155,30 +108,22 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
    * @returns
    */
   private normalize(k8c: K8ssandraCluster, config: C): K8ssandraCluster {
+    const resources = k8c.spec.cassandra.resources;
     let newSize = k8c.spec.cassandra.datacenters[0].size;
+
+    Logger.log('Resources to normalize:', resources);
+
+    resources.memoryMiB = Math.max(resources.memoryMiB, config.minResources?.memoryMiB ?? 1);
+    resources.memoryMiB = Math.min(resources.memoryMiB, config.maxResources?.memoryMiB ?? Infinity);
+
+    resources.milliCpu = Math.max(resources.milliCpu, config.minResources?.milliCpu ?? 1);
+    resources.milliCpu = Math.min(resources.milliCpu, config.maxResources?.milliCpu ?? Infinity);
 
     newSize = Math.max(newSize, config.minNodes ?? 1);
     newSize = Math.min(newSize, config.maxNodes ?? Infinity);
 
+    k8c.spec.cassandra.resources = resources;
     k8c.spec.cassandra.datacenters[0].size = newSize;
-
-    return k8c;
-  }
-
-  private normalizeResources(k8c: K8ssandraCluster): K8ssandraCluster {
-    const requests = k8c.spec.cassandra.resources.requests;
-    const limits = k8c.spec.cassandra.resources.limits;
-
-    k8c.spec.cassandra.resources.requests['memory'] = `${requests.memoryMiB}Mi`;
-    k8c.spec.cassandra.resources.requests['cpu'] = `${requests.milliCpu}m`;
-
-    k8c.spec.cassandra.resources.limits['memory'] = `${limits.memoryMiB}Mi`;
-    k8c.spec.cassandra.resources.limits['cpu'] = `${limits.milliCpu}m`;
-
-    delete k8c.spec.cassandra.resources.requests.memoryMiB;
-    delete k8c.spec.cassandra.resources.requests.milliCpu;
-    delete k8c.spec.cassandra.resources.limits.memoryMiB;
-    delete k8c.spec.cassandra.resources.limits.milliCpu;
 
     return k8c;
   }

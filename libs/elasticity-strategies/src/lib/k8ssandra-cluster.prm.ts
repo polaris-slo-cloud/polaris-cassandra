@@ -6,10 +6,6 @@ import {
   initSelf,
 } from '@polaris-sloc/core';
 
-export class K8ssandraClusterSpec {
-  cassandra: CassandraSpec;
-}
-
 export class CassandraSpec {
   clusterName: string;
 
@@ -33,18 +29,13 @@ export class CassandraSpec {
   /**
    * Resources is the cpu and memory resources for the cassandra container.
    */
-  resources: {
-    /**
-     * Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it
-     * defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value.
-     */
-    requests?: ContainerResources;
+  @PolarisType(() => ContainerResources)
+  resources: ContainerResources;
+}
 
-    /**
-     * Limits describes the maximum amount of compute resources allowed.
-     */
-    limits?: ContainerResources;
-  };
+export class K8ssandraClusterSpec {
+  @PolarisType(() => CassandraSpec)
+  cassandra: CassandraSpec;
 }
 
 /**

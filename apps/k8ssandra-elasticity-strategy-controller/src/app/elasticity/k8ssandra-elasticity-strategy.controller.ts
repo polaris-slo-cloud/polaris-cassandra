@@ -2,6 +2,7 @@ import {
   ContainerResources,
   ElasticityStrategy,
   Logger,
+  PolarisRuntime,
   Resources,
   SloTarget,
 } from '@polaris-sloc/core';
@@ -16,6 +17,10 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
   SloTarget,
   K8ssandraElasticityStrategyConfig
 > {
+  constructor(polarisRuntime: PolarisRuntime) {
+    super(polarisRuntime);
+  }
+
   protected updateK8ssandraCluster(
     elasticityStrategy: ElasticityStrategy<
       K8ssandraSloCompliance,
@@ -53,18 +58,18 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
     Logger.log('cpuComplianceDiff', cpuComplianceDiff);
     Logger.log('cpuScalePercent', cpuScalePercent);
 
-    const limits = k8c.spec.cassandra.resources.limits;
+    const resources = k8c.spec.cassandra.resources;
 
-    const scaledLimits = new ContainerResources({
-      memoryMiB: limits.memoryMiB * memoryScalePercent,
-      milliCpu: limits.milliCpu * cpuScalePercent,
+    const scaledResources = new ContainerResources({
+      memoryMiB: Math.ceil(resources.memoryMiB * memoryScalePercent),
+      milliCpu: resources.milliCpu,
     });
 
     if (
       this.checkIfOutsideStabilizationWindow(
         elasticityStrategy,
-        limits,
-        scaledLimits
+        resources,
+        scaledResources
       )
     ) {
       Logger.log(
@@ -74,9 +79,8 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
       return;
     }
 
-    Logger.log('Setting new limits', scaledLimits);
-
-    k8c.spec.cassandra.resources.limits = scaledLimits;
+    Logger.log('Setting new resources', scaledResources);
+    k8c.spec.cassandra.resources = scaledResources;
 
     return k8c;
   }
