@@ -51,12 +51,12 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
     Logger.log('memoryComplianceDiff', memoryComplianceDiff);
     Logger.log('memoryScalePercent', memoryScalePercent);
 
-    const cpuComplianceDiff =
-      sloOutputParams.currCpuSloCompliancePercentage - 100;
-    const cpuScalePercent = (100 + cpuComplianceDiff) / 100;
+    // const cpuComplianceDiff =
+    //   sloOutputParams.currCpuSloCompliancePercentage - 100;
+    // const cpuScalePercent = (100 + cpuComplianceDiff) / 100;
 
-    Logger.log('cpuComplianceDiff', cpuComplianceDiff);
-    Logger.log('cpuScalePercent', cpuScalePercent);
+    // Logger.log('cpuComplianceDiff', cpuComplianceDiff);
+    // Logger.log('cpuScalePercent', cpuScalePercent);
 
     const resources = k8c.spec.cassandra.resources;
 
