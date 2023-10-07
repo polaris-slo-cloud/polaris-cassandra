@@ -1,4 +1,7 @@
-import { ApiObjectMetadata, SloTarget } from '@polaris-sloc/core';
+import {
+  ApiObjectMetadata,
+  SloTarget,
+} from '@polaris-sloc/core';
 import {
   K8ssandraEfficiencySloMapping,
   K8ssandraEfficiencySloMappingSpec,
@@ -25,6 +28,10 @@ export default new K8ssandraEfficiencySloMapping({
       tolerance: 15,
     },
     staticElasticityStrategyConfig: {
+      maxResources: {
+        memoryMiB: 8000,
+        milliCpu: 2000,
+      },
       maxNodes: 3,
     },
     stabilizationWindow: {
