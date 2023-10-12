@@ -51,12 +51,18 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
     Logger.log('memoryComplianceDiff', memoryComplianceDiff);
     Logger.log('memoryScalePercent', memoryScalePercent);
 
-    // const cpuComplianceDiff =
-    //   sloOutputParams.currCpuSloCompliancePercentage - 100;
-    // const cpuScalePercent = (100 + cpuComplianceDiff) / 100;
+    const size = k8c.spec.cassandra.datacenters[0].size;
+    let newSize = size;
 
-    // Logger.log('cpuComplianceDiff', cpuComplianceDiff);
-    // Logger.log('cpuScalePercent', cpuScalePercent);
+    const tolerance = sloOutputParams.tolerance != null ? sloOutputParams.tolerance : 10;
+
+    Logger.log('horizontalCompliance', sloOutputParams.currHorizontalSloCompliancePercentange);
+    if (100 - sloOutputParams.currHorizontalSloCompliancePercentange > 0) {
+      Logger.log('Triggering horizontal scale up');
+      newSize = newSize + 1;
+    } else {
+      Logger.log('Not triggering horizontal scale up');
+    }
 
     const resources = k8c.spec.cassandra.resources;
 
@@ -69,7 +75,9 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
       !this.checkIfOutsideStabilizationWindow(
         elasticityStrategy,
         resources,
-        scaledResources
+        scaledResources,
+        size,
+        newSize
       )
     ) {
       Logger.log(
@@ -82,6 +90,9 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
     Logger.log('Setting new resources', scaledResources);
     k8c.spec.cassandra.resources = scaledResources;
 
+    Logger.log('Setting size', newSize);
+    k8c.spec.cassandra.datacenters[0].size = newSize;
+
     return k8c;
   }
 
@@ -92,9 +103,16 @@ export class K8ssandraElasticityStrategyController extends K8ssandraElasticitySt
       K8ssandraElasticityStrategyConfig
     >,
     oldResources: Resources,
-    newResources: Resources
+    newResources: Resources,
+    oldSize: number,
+    newSize: number,
   ): boolean {
     let isScaleUp = false;
+
+    if (newSize > oldSize) {
+      isScaleUp = true;
+    }
+
     Object.keys(newResources).forEach((key: keyof Resources) => {
       if (newResources[key] > oldResources[key]) {
         isScaleUp = true;
