@@ -38,49 +38,16 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
   private async getEfficiency(): Promise<Sample<K8ssandraEfficiency>> {
     Logger.log('Getting efficiency metrics');
 
-    const avgWritesTotal = await this.getAverageWritesTotal();
     const avgCpuUtilisation = await this.getAverageCpuUtilisation();
     const avgMemoryUtilisation = await this.getAverageMemoryUtilisation();
-
-    let timestamp,
-      avgCpuUtilisationValue,
-      avgMemoryUtilisationValue,
-      avgWritesTotalValue;
-
-    if (avgWritesTotal.results?.length > 0) {
-      const writeEfficiencyResult = avgWritesTotal.results[0].samples[0];
-
-      Logger.log('writeEfficiency sample: ', writeEfficiencyResult);
-
-      timestamp = writeEfficiencyResult.timestamp;
-      avgWritesTotalValue = writeEfficiencyResult.value;
-    }
-
-    if (avgCpuUtilisation.results?.length > 0) {
-      const avgCpuUtilisationResult = avgCpuUtilisation.results[0].samples[0];
-
-      Logger.log('avgCpuUtilisation sample: ', avgCpuUtilisationResult);
-
-      timestamp = avgCpuUtilisationResult.timestamp;
-      avgCpuUtilisationValue = 1 - avgCpuUtilisationResult.value;
-    }
-
-    if (avgMemoryUtilisation.results?.length > 0) {
-      const avgMemoryUtilisationResult =
-        avgMemoryUtilisation.results[0].samples[0];
-
-      Logger.log('avgMemoryUtilisation sample: ', avgMemoryUtilisationResult);
-
-      timestamp = avgMemoryUtilisationResult.timestamp;
-      avgMemoryUtilisationValue = avgMemoryUtilisationResult.value;
-    }
+    const avgWriteLoadPerNode = await this.getAverageWritesTotal();
 
     const efficiency = {
-      timestamp,
+      timestamp: avgWriteLoadPerNode.timestamp,
       value: {
-        avgCpuUtilisation: avgCpuUtilisationValue,
-        avgMemoryUtilisation: avgMemoryUtilisationValue,
-        avgWritesTotal: avgWritesTotalValue,
+        avgCpuUtilisation: 0.6, // TODO
+        avgMemoryUtilisation: avgMemoryUtilisation.value,
+        avgWriteLoadPerNode: avgWriteLoadPerNode.value,
       },
     };
 
@@ -174,7 +141,22 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
 
     const avgCpuUtilisationQueryResult = await avgCpuUtilisationQuery.execute();
 
-    return avgCpuUtilisationQueryResult;
+    let timestamp, avgCpuUtilisationValue;
+
+    if (avgCpuUtilisationQueryResult.results.length > 0) {
+      const avgCpuUtilisationResult =
+        avgCpuUtilisationQueryResult.results[0].samples[0];
+
+      Logger.log('avgCpuUtilisation sample: ', avgCpuUtilisationResult);
+
+      timestamp = avgCpuUtilisationResult.timestamp;
+      avgCpuUtilisationValue = 1 - avgCpuUtilisationResult.value;
+    }
+
+    return {
+      timestamp,
+      value: avgCpuUtilisationValue,
+    };
   }
 
   private async getAverageMemoryUtilisation() {
@@ -299,6 +281,21 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .maxByGroup();
     const memoryUtilisationResult = await memoryUtilisationQuery.execute();
 
-    return memoryUtilisationResult;
+    let timestamp, avgMemoryUtilisationValue;
+
+    if (memoryUtilisationResult.results.length > 0) {
+      const avgMemoryUtilisationResult =
+        memoryUtilisationResult.results[0].samples[0];
+
+      Logger.log('avgMemoryUtilisation sample: ', avgMemoryUtilisationResult);
+
+      timestamp = avgMemoryUtilisationResult.timestamp;
+      avgMemoryUtilisationValue = avgMemoryUtilisationResult.value;
+    }
+
+    return {
+      timestamp,
+      value: avgMemoryUtilisationValue,
+    };
   }
 }
