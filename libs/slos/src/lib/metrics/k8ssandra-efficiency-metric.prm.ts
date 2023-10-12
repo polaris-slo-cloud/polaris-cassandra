@@ -14,7 +14,7 @@ export interface K8ssandraEfficiency {
 
   avgMemoryUtilisation: number;
 
-  avgWritesTotal: number;
+  avgWriteLoadPerNode: number;
 }
 
 /**
@@ -25,6 +25,11 @@ export interface K8ssandraEfficiencyParams extends ComposedMetricParams {
    * The time duration that is used for calculating the average CPU utilisation in seconds.
    */
   cpuUtilisationTimeRange: number;
+
+  /**
+   * The time duration that is used for calculating the average write load in seconds.
+   */
+  writeLoadTimeRange: number;
 }
 
 /**

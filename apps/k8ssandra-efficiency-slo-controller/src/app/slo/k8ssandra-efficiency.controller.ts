@@ -46,6 +46,7 @@ export class K8ssandraEfficiencySlo
 
     const efficiencyParams: K8ssandraEfficiencyParams = {
       cpuUtilisationTimeRange: 600, // TODO move to static config?
+      writeLoadTimeRange: 300,
       namespace: sloMapping.metadata.namespace,
       sloTarget: sloMapping.spec.targetRef,
       owner: createOwnerReference(sloMapping),
@@ -106,12 +107,13 @@ export class K8ssandraEfficiencySlo
   private calculateHorizontalSloCompliance(
     sample: K8ssandraEfficiency
   ): number {
-    // const target = this.sloMapping.spec.sloConfig.targetWriteEfficiency;
+    const target = this.sloMapping.spec.sloConfig.targetWriteLoadPerNode;
+    const currentLoad = sample.avgWriteLoadPerNode > 0 ? sample.avgWriteLoadPerNode : 1;
 
-    // const compliance = Math.ceil((target / sample.avgWritesTotal) * 100);
+    const compliance = Math.ceil((target / currentLoad) * 100);
 
-    // return compliance;
+    Logger.log('horizontalCompliance:', compliance);
 
-    return 50; // TODO
+    return compliance;
   }
 }

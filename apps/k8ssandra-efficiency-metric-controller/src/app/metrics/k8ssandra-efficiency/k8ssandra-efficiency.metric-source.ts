@@ -59,7 +59,13 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
   private async getAverageWritesTotal() {
     const writeEfficiencyQuery = this.metricsSource
       .getTimeSeriesSource()
-      .select('mcac', 'client_request_latency_total')
+      .select(
+        'mcac',
+        'client_request_latency_total',
+        TimeRange.fromDuration(
+          Duration.fromSeconds(this.params.writeLoadTimeRange)
+        )
+      )
       .filterOnLabel({
         label: 'cassandra_datastax_com_cluster',
         operator: LabelComparisonOperator.Equal,
@@ -69,11 +75,27 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
         label: 'request_type',
         operator: LabelComparisonOperator.Equal,
         comparisonValue: 'write',
-      });
+      })
+      .rate()
+      .sumByGroup(LabelGrouping.by('cluster', 'request_type'));
 
     const writeEfficiencyQueryResult = await writeEfficiencyQuery.execute();
 
-    return writeEfficiencyQueryResult;
+    const nodeCount = await this.getNodeCount();
+
+    Logger.log('Node Count:', nodeCount);
+
+    const writeEfficiencyResult =
+      writeEfficiencyQueryResult.results[0].samples[0];
+
+    const avgWriteLoadPerNode = writeEfficiencyResult.value / nodeCount;
+
+    Logger.log('writeEfficiency sample: ', writeEfficiencyResult);
+
+    return {
+      timestamp: writeEfficiencyResult.timestamp,
+      value: avgWriteLoadPerNode,
+    };
   }
 
   private async getAverageCpuUtilisation() {
@@ -297,5 +319,22 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       timestamp,
       value: avgMemoryUtilisationValue,
     };
+  }
+
+  private async getNodeCount() {
+    // count(mcac_compaction_completed_tasks{cluster=~"polaris-k8ssandra-cluster"} >= 0)
+
+    const nodeCountQuery = this.metricsSource
+      .getTimeSeriesSource()
+      .select('mcac', 'compaction_completed_tasks')
+      .filterOnLabel({
+        label: 'cluster',
+        operator: LabelComparisonOperator.Equal,
+        comparisonValue: this.params.sloTarget.name,
+      });
+
+    const nodeCountQueryResult = await nodeCountQuery.execute();
+
+    return nodeCountQueryResult.results.length;
   }
 }

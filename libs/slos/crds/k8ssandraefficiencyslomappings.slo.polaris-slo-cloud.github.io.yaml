@@ -137,11 +137,9 @@ spec:
                     targetMemoryUtilisation:
                       type: integer
                       format: int64
-                    targetWriteEfficiency:
+                    targetWriteLoadPerNode:
                       type: integer
-                      description: >-
-                        The desired target write efficiency in the range between
-                        0 and 100.
+                      description: The desired target write load per k8ssandra node.
                       format: int64
                     tolerance:
                       type: integer
@@ -154,7 +152,7 @@ spec:
                   required:
                     - targetCpuUtilisation
                     - targetMemoryUtilisation
-                    - targetWriteEfficiency
+                    - targetWriteLoadPerNode
                   description: >-
                     Represents the configuration options of the
                     K8ssandraEfficiency SLO.

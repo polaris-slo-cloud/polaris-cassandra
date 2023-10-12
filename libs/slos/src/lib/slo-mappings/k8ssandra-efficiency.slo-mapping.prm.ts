@@ -18,9 +18,9 @@ export interface K8ssandraEfficiencySloConfig {
   targetMemoryUtilisation: number;
 
   /**
-   * The desired target write efficiency in the range between 0 and 100.
+   * The desired target write load per k8ssandra node.
    */
-  targetWriteEfficiency: number;
+  targetWriteLoadPerNode: number;
 
    /**
    * Specifies the tolerance within which no scaling will be performed
