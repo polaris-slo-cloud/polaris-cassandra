@@ -41,8 +41,7 @@ export abstract class K8ssandraSloComplianceElasticityStrategyControllerBase<
       sloCompliance.currMemorySloCompliancePercentage > upperBound;
 
     const horizontalActionNeeded =
-      sloCompliance.currHorizontalSloCompliancePercentange < lowerBound ||
-      sloCompliance.currHorizontalSloCompliancePercentange > upperBound;
+      sloCompliance.currHorizontalSloCompliancePercentange < lowerBound;
 
     Logger.log('vertical action needed: ', verticalActionNeeded);
     Logger.log('horizontal action needed: ', horizontalActionNeeded);
