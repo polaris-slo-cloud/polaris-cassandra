@@ -23,17 +23,6 @@ export class K8ssandraEfficiencyMetricSourceFactory
       K8ssandraEfficiencyParams
     >
 {
-  // ToDo:
-  // - Adapt this list, if necessary.
-  // - To register this factory with the `MetricsSourcesManager` (needed if the metric source should execute in the current process
-  //   and be available through `MetricSource.getComposedMetricSource()`, add the following code to your `initPolarisLib()` function
-  //   or to your `main.ts`:
-  //   ```
-  //   K8ssandraEfficiencyMetricSourceFactory.supportedSloTargetTypes.forEach(
-  //       sloTargetType => runtime.metricsSourcesManager.addComposedMetricSourceFactory(new K8ssandraEfficiencyMetricSourceFactory(), sloTargetType),
-  //   );
-  //   ```
-  //
   /**
    * The list of supported `SloTarget` types.
    *
@@ -69,7 +58,6 @@ export class K8ssandraEfficiencyMetricSourceFactory
 
   readonly metricType = K8ssandraEfficiencyMetric.instance;
 
-  // ToDo: Adapt this, if necessary.
   readonly metricSourceName = `${K8ssandraEfficiencyMetric.instance.metricTypeName}/generic-k8ssandra-efficiency`;
 
   createSource(
