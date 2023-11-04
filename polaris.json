@@ -11,6 +11,7 @@
         "polarisTypes": [
           "K8ssandraElasticityStrategy",
           "K8ssandraHorizontalElasticityStrategy",
+          "K8ssandraVerticalElasticityStrategy"
         ]
       }
     },
@@ -42,6 +43,10 @@
     "k8ssandra-horizontal-elasticity-strategy-controller": {
       "projectType": "elasticity-strategy-controller",
       "tsEntryPoint": "apps/k8ssandra-horizontal-elasticity-strategy-controller/src/main.ts"
+    },
+    "k8ssandra-vertical-elasticity-strategy-controller": {
+      "projectType": "elasticity-strategy-controller",
+      "tsEntryPoint": "apps/k8ssandra-vertical-elasticity-strategy-controller/src/main.ts"
     }
   }
 }
