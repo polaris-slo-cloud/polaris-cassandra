@@ -45,7 +45,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
     const efficiency = {
       timestamp: avgWriteLoadPerNode.timestamp,
       value: {
-        avgCpuUtilisation: 0.6, // TODO
+        avgCpuUtilisation: avgCpuUtilisation.value,
         avgMemoryUtilisation: avgMemoryUtilisation.value,
         avgWriteLoadPerNode: avgWriteLoadPerNode.value,
       },
@@ -144,9 +144,8 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       .select(
         'collectd',
         'cpu_total',
-        TimeRange.fromDurationWithOffset(
-          Duration.fromSeconds(30),
-          Duration.fromSeconds(30)
+        TimeRange.fromDuration(
+          Duration.fromSeconds(this.params.cpuUtilisationTimeRange)
         )
       )
       .filterOnLabel({
@@ -159,6 +158,8 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
 
     const avgCpuUtilisationQuery = idleCpuUsageQuery
       .divideBy(cpuUsageQuery)
+      .multiplyBy(-1)
+      .add(1)
       .averageByGroup(LabelGrouping.by('cluster'));
 
     const avgCpuUtilisationQueryResult = await avgCpuUtilisationQuery.execute();
@@ -172,7 +173,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
       Logger.log('avgCpuUtilisation sample: ', avgCpuUtilisationResult);
 
       timestamp = avgCpuUtilisationResult.timestamp;
-      avgCpuUtilisationValue = 1 - avgCpuUtilisationResult.value;
+      avgCpuUtilisationValue = avgCpuUtilisationResult.value;
     }
 
     return {
