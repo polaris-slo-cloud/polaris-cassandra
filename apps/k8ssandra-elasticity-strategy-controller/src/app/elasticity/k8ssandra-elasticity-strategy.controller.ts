@@ -9,11 +9,11 @@ import {
 import {
   K8ssandraElasticityStrategyConfig,
   K8ssandraCluster,
-  K8ssandraElasticityStrategyControllerBase,
+  K8ssandraSloComplianceElasticityStrategyControllerBase,
 } from '@nicokratky/elasticity-strategies';
 import { K8ssandraSloCompliance } from '@nicokratky/slos';
 
-export class K8ssandraElasticityStrategyController extends K8ssandraElasticityStrategyControllerBase<
+export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianceElasticityStrategyControllerBase<
   SloTarget,
   K8ssandraElasticityStrategyConfig
 > {

@@ -2,6 +2,7 @@ import {
   ApiObjectMetadata,
   DefaultStabilizationWindowTracker,
   ElasticityStrategy,
+  ElasticityStrategyController,
   Logger,
   OrchestratorClient,
   PolarisRuntime,
@@ -10,18 +11,21 @@ import {
 } from '@polaris-sloc/core';
 import { K8ssandraElasticityStrategyConfig } from './k8ssandra-elasticity-strategy.prm';
 import { K8ssandraCluster } from '../k8ssandra-cluster.prm';
-import { K8ssandraSloComplianceElasticityStrategyControllerBase } from './k8ssandra-compliance-elasticity-strategy-controller.base';
 import { K8ssandraSloCompliance } from '@nicokratky/slos';
 
 /** Tracked executions eviction interval of 20 minutes. */
 const EVICTION_INTERVAL_MSEC = 20 * 60 * 1000;
 
-export abstract class K8ssandraElasticityStrategyControllerBase<
+export abstract class K8ssandraSloComplianceElasticityStrategyControllerBase<
   T extends SloTarget,
   C extends K8ssandraElasticityStrategyConfig
-> extends K8ssandraSloComplianceElasticityStrategyControllerBase<T, C> {
+> implements ElasticityStrategyController<K8ssandraSloCompliance, T, C>
+{
   /** The client for accessing orchestrator resources. */
   protected orchClient: OrchestratorClient;
+
+  /** The `PolarisRuntime` instance. */
+  protected polarisRuntime: PolarisRuntime;
 
   /** Tracks the stabilization windows of the ElasticityStrategy instances. */
   protected stabilizationWindowTracker: StabilizationWindowTracker<
@@ -31,7 +35,7 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
   private evictionInterval: NodeJS.Timeout;
 
   constructor(polarisRuntime: PolarisRuntime) {
-    super();
+    this.polarisRuntime = polarisRuntime;
     this.orchClient = polarisRuntime.createOrchestratorClient();
 
     this.evictionInterval = setInterval(
@@ -69,10 +73,34 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
 
     Logger.log('Successfully updated K8ssandraCluster:', updatedK8c);
     Logger.log('New resources:', updatedK8c.spec.cassandra.resources);
+    Logger.log('New size:', updatedK8c.spec.cassandra.datacenters[0].size);
   }
 
   onDestroy(): void {
     clearInterval(this.evictionInterval);
+  }
+
+  checkIfActionNeeded(
+    elasticityStrategy: ElasticityStrategy<K8ssandraSloCompliance, T, C>
+  ): Promise<boolean> {
+    const sloCompliance = elasticityStrategy.spec.sloOutputParams;
+    const tolerance = sloCompliance.tolerance ?? this.getDefaultTolerance();
+    const lowerBound = 100 - tolerance;
+    const upperBound = 100 + tolerance;
+
+    const verticalActionNeeded =
+      sloCompliance.currCpuSloCompliancePercentage < lowerBound ||
+      sloCompliance.currCpuSloCompliancePercentage > upperBound ||
+      sloCompliance.currMemorySloCompliancePercentage < lowerBound ||
+      sloCompliance.currMemorySloCompliancePercentage > upperBound;
+
+    const horizontalActionNeeded =
+      sloCompliance.currHorizontalSloCompliancePercentange < lowerBound;
+
+    Logger.log('vertical action needed: ', verticalActionNeeded);
+    Logger.log('horizontal action needed: ', horizontalActionNeeded);
+
+    return Promise.resolve(verticalActionNeeded || horizontalActionNeeded);
   }
 
   onElasticityStrategyDeleted(
@@ -113,11 +141,23 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
 
     Logger.log('Resources to normalize:', resources);
 
-    resources.memoryMiB = Math.max(resources.memoryMiB, config.minResources?.memoryMiB ?? 1);
-    resources.memoryMiB = Math.min(resources.memoryMiB, config.maxResources?.memoryMiB ?? Infinity);
+    resources.memoryMiB = Math.max(
+      resources.memoryMiB,
+      config.minResources?.memoryMiB ?? 1
+    );
+    resources.memoryMiB = Math.min(
+      resources.memoryMiB,
+      config.maxResources?.memoryMiB ?? Infinity
+    );
 
-    resources.milliCpu = Math.max(resources.milliCpu, config.minResources?.milliCpu ?? 1);
-    resources.milliCpu = Math.min(resources.milliCpu, config.maxResources?.milliCpu ?? Infinity);
+    resources.milliCpu = Math.max(
+      resources.milliCpu,
+      config.minResources?.milliCpu ?? 1
+    );
+    resources.milliCpu = Math.min(
+      resources.milliCpu,
+      config.maxResources?.milliCpu ?? Infinity
+    );
 
     newSize = Math.max(newSize, config.minNodes ?? 1);
     newSize = Math.min(newSize, config.maxNodes ?? Infinity);
@@ -126,5 +166,12 @@ export abstract class K8ssandraElasticityStrategyControllerBase<
     k8c.spec.cassandra.datacenters[0].size = newSize;
 
     return k8c;
+  }
+
+  /**
+   * @returns The default tolerance value if `SloCompliance.tolerance` is not set for an elasticity strategy.
+   */
+  protected getDefaultTolerance(): number {
+    return 10;
   }
 }
