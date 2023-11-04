@@ -31,6 +31,7 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
   ): Promise<K8ssandraCluster> {
     const oldResources = k8c.spec.cassandra.resources;
     const oldSize = k8c.spec.cassandra.datacenters[0].size;
+
     k8c = this.updateResources(elasticityStrategy, k8c);
     k8c = this.updateSize(elasticityStrategy, k8c);
 
@@ -65,24 +66,32 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
 
     const memoryComplianceDiff =
       sloOutputParams.currMemorySloCompliancePercentage - 100;
-
     Logger.log('memoryComplianceDiff', memoryComplianceDiff);
 
+    const cpuComplianceDiff =
+      sloOutputParams.currCpuSloCompliancePercentage - 100;
+    Logger.log('cpuComplianceDiff', cpuComplianceDiff);
 
     const tolerance = this.getTolerance(sloOutputParams);
 
     let memoryScalePercent = 1;
+    let cpuScalePercent = 1;
 
     if (Math.abs(memoryComplianceDiff) > tolerance) {
       memoryScalePercent = (100 - memoryComplianceDiff) / 100;
       Logger.log('memoryScalePercent', memoryScalePercent);
     }
 
+    if (Math.abs(cpuComplianceDiff) > tolerance) {
+      cpuScalePercent = (100 - cpuComplianceDiff) / 100;
+      Logger.log('cpuScalePercent', cpuScalePercent);
+    }
+
     const resources = k8c.spec.cassandra.resources;
 
     const scaledResources = new ContainerResources({
       memoryMiB: Math.ceil(resources.memoryMiB * memoryScalePercent),
-      milliCpu: resources.milliCpu,
+      milliCpu: Math.ceil(resources.milliCpu * cpuScalePercent),
     });
 
     Logger.log('Setting new resources', scaledResources);
