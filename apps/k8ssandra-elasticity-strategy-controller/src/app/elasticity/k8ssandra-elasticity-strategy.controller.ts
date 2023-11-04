@@ -29,7 +29,26 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
     >,
     k8c: K8ssandraCluster
   ): Promise<K8ssandraCluster> {
+    const oldResources = k8c.spec.cassandra.resources;
+    const oldSize = k8c.spec.cassandra.datacenters[0].size;
     k8c = this.updateResources(elasticityStrategy, k8c);
+    k8c = this.updateSize(elasticityStrategy, k8c);
+
+    if (
+      !this.checkIfOutsideStabilizationWindow(
+        elasticityStrategy,
+        oldResources,
+        k8c.spec.cassandra.resources,
+        oldSize,
+        k8c.spec.cassandra.datacenters[0].size
+      )
+    ) {
+      Logger.log(
+        'Skipping scaling, because stabilization window has not yet passed for: ',
+        elasticityStrategy
+      );
+      return;
+    }
 
     return Promise.resolve(k8c);
   }
@@ -46,22 +65,17 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
 
     const memoryComplianceDiff =
       sloOutputParams.currMemorySloCompliancePercentage - 100;
-    const memoryScalePercent = (100 - memoryComplianceDiff) / 100;
 
     Logger.log('memoryComplianceDiff', memoryComplianceDiff);
-    Logger.log('memoryScalePercent', memoryScalePercent);
 
-    const size = k8c.spec.cassandra.datacenters[0].size;
-    let newSize = size;
 
-    const tolerance = sloOutputParams.tolerance != null ? sloOutputParams.tolerance : 10;
+    const tolerance = this.getTolerance(sloOutputParams);
 
-    Logger.log('horizontalCompliance', sloOutputParams.currHorizontalSloCompliancePercentange);
-    if (100 - sloOutputParams.currHorizontalSloCompliancePercentange > 0) {
-      Logger.log('Triggering horizontal scale up');
-      newSize = newSize + 1;
-    } else {
-      Logger.log('Not triggering horizontal scale up');
+    let memoryScalePercent = 1;
+
+    if (Math.abs(memoryComplianceDiff) > tolerance) {
+      memoryScalePercent = (100 - memoryComplianceDiff) / 100;
+      Logger.log('memoryScalePercent', memoryScalePercent);
     }
 
     const resources = k8c.spec.cassandra.resources;
@@ -71,24 +85,37 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
       milliCpu: resources.milliCpu,
     });
 
-    if (
-      !this.checkIfOutsideStabilizationWindow(
-        elasticityStrategy,
-        resources,
-        scaledResources,
-        size,
-        newSize
-      )
-    ) {
-      Logger.log(
-        'Skipping scaling, because stabilization window has not yet passed for: ',
-        elasticityStrategy
-      );
-      return;
-    }
-
     Logger.log('Setting new resources', scaledResources);
     k8c.spec.cassandra.resources = scaledResources;
+
+    return k8c;
+  }
+
+  private updateSize(
+    elasticityStrategy: ElasticityStrategy<
+      K8ssandraSloCompliance,
+      SloTarget,
+      K8ssandraElasticityStrategyConfig
+    >,
+    k8c: K8ssandraCluster
+  ): K8ssandraCluster {
+    const sloOutputParams = elasticityStrategy.spec.sloOutputParams;
+
+    const size = k8c.spec.cassandra.datacenters[0].size;
+    let newSize = size;
+
+    const horizontalComplianceDiff =
+      100 - sloOutputParams.currHorizontalSloCompliancePercentange;
+    Logger.log('horizontalComplianceDiff', horizontalComplianceDiff);
+
+    const tolerance = this.getTolerance(sloOutputParams);
+
+    if (horizontalComplianceDiff > tolerance) {
+      Logger.log('Triggering horizontal scale up');
+      newSize = newSize + 1;
+    } else {
+      Logger.log('Not triggering horizontal scale up');
+    }
 
     Logger.log('Setting size', newSize);
     k8c.spec.cassandra.datacenters[0].size = newSize;
@@ -105,7 +132,7 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
     oldResources: Resources,
     newResources: Resources,
     oldSize: number,
-    newSize: number,
+    newSize: number
   ): boolean {
     let isScaleUp = false;
 
@@ -128,5 +155,9 @@ export class K8ssandraElasticityStrategyController extends K8ssandraSloComplianc
         elasticityStrategy
       );
     }
+  }
+
+  private getTolerance(sloOutputParams: K8ssandraSloCompliance) {
+    return sloOutputParams.tolerance ?? this.getDefaultTolerance();
   }
 }
