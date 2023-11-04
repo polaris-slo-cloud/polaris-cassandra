@@ -32,6 +32,10 @@ export default new K8ssandraEfficiencySloMapping({
         memoryMiB: 8000,
         milliCpu: 2000,
       },
+      minResources: {
+        memoryMiB: 2000,
+        milliCpu: 500, // k8ssandra nodes don't start with less than 500m cpu!
+      },
       maxNodes: 3,
     },
     stabilizationWindow: {
