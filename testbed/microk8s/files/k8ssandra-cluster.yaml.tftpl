@@ -11,18 +11,14 @@ spec:
       prometheus:
         enabled: true
     %{~ endif ~}
-    %{~ if can(config.resources.requests) || can(config.resources.limits) ~}
+    %{~ if can(config.resources) ~}
     resources:
-      %{~ if can(config.resources.requests) ~}
       requests:
-        cpu: ${config.resources.requests.cpu}
-        memory: ${config.resources.requests.memory}
-      %{~ endif ~}
-      %{~ if can(config.resources.limits) ~}
+        cpu: ${config.resources.cpu}
+        memory: ${config.resources.memory}
       limits:
-        cpu: ${config.resources.limits.cpu}
-        memory: ${config.resources.limits.memory}
-      %{~ endif ~}
+        cpu: ${config.resources.cpu}
+        memory: ${config.resources.memory}
     %{~ endif ~}
     softPodAntiAffinity: true
     datacenters:

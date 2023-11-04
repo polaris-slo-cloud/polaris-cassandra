@@ -12,14 +12,8 @@ locals {
     enable_prometheus      = true
     stargate_size          = 0
     resources = {
-      requests = {
-        cpu    = "100m"
-        memory = "1000Mi"
-      }
-      limits = {
-        cpu    = "500m"
-        memory = "6000Mi"
-      }
+      cpu    = "500m"
+      memory = "6000Mi"
     }
   }
 }
