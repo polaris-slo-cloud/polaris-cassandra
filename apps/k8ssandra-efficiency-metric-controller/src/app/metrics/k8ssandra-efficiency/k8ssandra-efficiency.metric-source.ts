@@ -85,15 +85,20 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
 
     Logger.log('Node Count:', nodeCount);
 
-    const writeEfficiencyResult =
-      writeEfficiencyQueryResult.results[0].samples[0];
+    let timestamp, avgWriteLoadPerNode;
 
-    const avgWriteLoadPerNode = writeEfficiencyResult.value / nodeCount;
+    if (writeEfficiencyQueryResult.results.length > 0) {
+      const writeEfficiencyResult =
+        writeEfficiencyQueryResult.results[0].samples[0];
 
-    Logger.log('writeEfficiency sample: ', writeEfficiencyResult);
+      timestamp = writeEfficiencyResult.timestamp;
+      avgWriteLoadPerNode = writeEfficiencyResult.value / nodeCount;
+
+      Logger.log('writeEfficiency sample: ', writeEfficiencyResult);
+    }
 
     return {
-      timestamp: writeEfficiencyResult.timestamp,
+      timestamp,
       value: avgWriteLoadPerNode,
     };
   }
