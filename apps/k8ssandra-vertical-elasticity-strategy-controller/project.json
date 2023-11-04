@@ -68,7 +68,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker build -f ./apps/k8ssandra-vertical-elasticity-strategy-controller/Dockerfile --build-arg POLARIS_APP_TYPE=slo --build-arg POLARIS_APP_NAME=k8ssandra-vertical-elasticity-strategy-controller -t polarissloc/k8ssandra-vertical-elasticity-strategy-controller:latest ."
+          "docker build -f ./apps/k8ssandra-vertical-elasticity-strategy-controller/Dockerfile --build-arg POLARIS_APP_TYPE=slo --build-arg POLARIS_APP_NAME=k8ssandra-vertical-elasticity-strategy-controller -t nicokratky/k8ssandra-vertical-elasticity-strategy-controller:latest ."
         ],
         "parallel": false
       }
