@@ -23,13 +23,17 @@ export interface K8ssandraEfficiency {
 export interface K8ssandraEfficiencyParams extends ComposedMetricParams {
   /**
    * The time duration that is used for calculating the average CPU utilisation in seconds.
+   *
+   * @default 300
    */
-  cpuUtilisationTimeRange: number;
+  cpuUtilisationTimeRange?: number;
 
   /**
    * The time duration that is used for calculating the average write load in seconds.
+   *
+   * @default 300
    */
-  writeLoadTimeRange: number;
+  writeLoadTimeRange?: number;
 }
 
 /**

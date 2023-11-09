@@ -63,7 +63,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
         'mcac',
         'client_request_latency_total',
         TimeRange.fromDuration(
-          Duration.fromSeconds(this.params.writeLoadTimeRange)
+          Duration.fromSeconds(this.params.writeLoadTimeRange ?? 300)
         )
       )
       .filterOnLabel({
@@ -128,7 +128,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
         'collectd',
         'cpu_total',
         TimeRange.fromDuration(
-          Duration.fromSeconds(this.params.cpuUtilisationTimeRange)
+          Duration.fromSeconds(this.params.cpuUtilisationTimeRange ?? 300)
         )
       )
       .filterOnLabel({
@@ -150,7 +150,7 @@ export class K8ssandraEfficiencyMetricSource extends ComposedMetricSourceBase<K8
         'collectd',
         'cpu_total',
         TimeRange.fromDuration(
-          Duration.fromSeconds(this.params.cpuUtilisationTimeRange)
+          Duration.fromSeconds(this.params.cpuUtilisationTimeRange ?? 300)
         )
       )
       .filterOnLabel({
