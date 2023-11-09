@@ -26,6 +26,7 @@
           "K8ssandraEfficiencyMetricMapping",
           "K8ssandraEfficiencySloMapping",
           "K8ssandraAvgWriteLoadSloMapping",
+          "K8ssandraVerticalEfficiencySloMapping"
         ]
       }
     },
@@ -52,6 +53,10 @@
     "k8ssandra-avg-write-load-slo-controller": {
       "projectType": "slo-controller",
       "tsEntryPoint": "apps/k8ssandra-avg-write-load-slo-controller/src/main.ts"
+    },
+    "k8ssandra-vertical-efficiency-slo-controller": {
+      "projectType": "slo-controller",
+      "tsEntryPoint": "apps/k8ssandra-vertical-efficiency-slo-controller/src/main.ts"
     }
   }
 }
