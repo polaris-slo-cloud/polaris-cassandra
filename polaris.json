@@ -24,7 +24,8 @@
         "outDir": "libs/slos/crds",
         "polarisTypes": [
           "K8ssandraEfficiencyMetricMapping",
-          "K8ssandraEfficiencySloMapping"
+          "K8ssandraEfficiencySloMapping",
+          "K8ssandraAvgWriteLoadSloMapping",
         ]
       }
     },
@@ -47,6 +48,10 @@
     "k8ssandra-vertical-elasticity-strategy-controller": {
       "projectType": "elasticity-strategy-controller",
       "tsEntryPoint": "apps/k8ssandra-vertical-elasticity-strategy-controller/src/main.ts"
+    },
+    "k8ssandra-avg-write-load-slo-controller": {
+      "projectType": "slo-controller",
+      "tsEntryPoint": "apps/k8ssandra-avg-write-load-slo-controller/src/main.ts"
     }
   }
 }
