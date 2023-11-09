@@ -1,7 +1,11 @@
 import {
+  ApiObjectMetadata,
   DefaultStabilizationWindowTracker,
+  ElasticityStrategy,
+  Logger,
   OrchestratorClient,
   PolarisRuntime,
+  SloCompliance,
   SloComplianceElasticityStrategyControllerBase,
   SloTarget,
   StabilizationWindowTracker,
@@ -9,6 +13,7 @@ import {
 import {
   K8ssandraHorizontalElasticityStrategyConfig,
   K8ssandraHorizontalElasticityStrategy,
+  K8ssandraCluster,
 } from '@nicokratky/elasticity-strategies';
 
 /** Tracked executions eviction interval of 20 minutes. */
@@ -51,7 +56,24 @@ export class K8ssandraHorizontalElasticityStrategyController extends SloComplian
   async execute(
     elasticityStrategy: K8ssandraHorizontalElasticityStrategy
   ): Promise<void> {
-    // ToDo: Implement this method
+    const k8c = await this.loadTarget(elasticityStrategy);
+    Logger.log('Loaded K8ssandraCluster:', k8c);
+
+    let updatedK8c = await this.updateK8ssandraCluster(elasticityStrategy, k8c);
+
+    if (updatedK8c == null) {
+      // can't update K8ssandraCluster
+      // probably outside stabilization window
+      return;
+    }
+
+    updatedK8c = this.normalize(k8c, elasticityStrategy.spec.staticConfig);
+
+    await this.orchClient.update(updatedK8c);
+    this.stabilizationWindowTracker.trackExecution(elasticityStrategy);
+
+    Logger.log('Successfully updated K8ssandraCluster:', updatedK8c);
+    Logger.log('New size:', updatedK8c.spec.cassandra.datacenters[0].size);
   }
 
   onDestroy(): void {
@@ -64,5 +86,126 @@ export class K8ssandraHorizontalElasticityStrategyController extends SloComplian
     this.stabilizationWindowTracker.removeElasticityStrategy(
       elasticityStrategy
     );
+  }
+
+  private async loadTarget(
+    elasticityStrategy: ElasticityStrategy<
+      SloCompliance,
+      SloTarget,
+      K8ssandraHorizontalElasticityStrategyConfig
+    >
+  ): Promise<K8ssandraCluster> {
+    const targetRef = elasticityStrategy.spec.targetRef;
+    const queryApiObject = new K8ssandraCluster({
+      metadata: new ApiObjectMetadata({
+        namespace: elasticityStrategy.metadata.namespace,
+        name: targetRef.name,
+      }),
+    });
+
+    const k8c = await this.orchClient.read(queryApiObject);
+
+    return k8c;
+  }
+
+  /**
+   * Normalize the K8ssandraCluster CRD to be within the min/max range
+   * of nodes and resources.
+   *
+   * @param k8c
+   * @param config
+   * @returns
+   */
+  private normalize(
+    k8c: K8ssandraCluster,
+    config: K8ssandraHorizontalElasticityStrategyConfig
+  ): K8ssandraCluster {
+    let newSize = k8c.spec.cassandra.datacenters[0].size;
+
+    newSize = Math.max(newSize, config.minNodes ?? 1);
+    newSize = Math.min(newSize, config.maxNodes ?? Infinity);
+
+    k8c.spec.cassandra.datacenters[0].size = newSize;
+
+    return k8c;
+  }
+
+  protected updateK8ssandraCluster(
+    elasticityStrategy: K8ssandraHorizontalElasticityStrategy,
+    k8c: K8ssandraCluster
+  ): Promise<K8ssandraCluster> {
+    const oldSize = k8c.spec.cassandra.datacenters[0].size;
+
+    k8c = this.updateSize(elasticityStrategy, k8c);
+
+    if (
+      !this.checkIfOutsideStabilizationWindow(
+        elasticityStrategy,
+        oldSize,
+        k8c.spec.cassandra.datacenters[0].size
+      )
+    ) {
+      Logger.log(
+        'Skipping scaling, because stabilization window has not yet passed for: ',
+        elasticityStrategy
+      );
+      return;
+    }
+
+    return Promise.resolve(k8c);
+  }
+
+  private updateSize(
+    elasticityStrategy: K8ssandraHorizontalElasticityStrategy,
+    k8c: K8ssandraCluster
+  ): K8ssandraCluster {
+    const sloOutputParams = elasticityStrategy.spec.sloOutputParams;
+
+    const size = k8c.spec.cassandra.datacenters[0].size;
+    let newSize = size;
+
+    const horizontalComplianceDiff =
+      100 - sloOutputParams.currSloCompliancePercentage;
+    Logger.log('horizontalComplianceDiff', horizontalComplianceDiff);
+
+    const tolerance = this.getTolerance(sloOutputParams);
+
+    if (horizontalComplianceDiff > tolerance) {
+      Logger.log('Triggering horizontal scale up');
+      newSize = newSize + 1;
+    } else {
+      Logger.log('Not triggering horizontal scale up');
+    }
+
+    Logger.log('Setting size', newSize);
+    k8c.spec.cassandra.datacenters[0].size = newSize;
+
+    return k8c;
+  }
+
+  private checkIfOutsideStabilizationWindow(
+    elasticityStrategy: K8ssandraHorizontalElasticityStrategy,
+    oldSize: number,
+    newSize: number
+  ): boolean {
+    let isScaleUp = false;
+
+    if (newSize > oldSize) {
+      isScaleUp = true;
+    }
+
+    if (isScaleUp) {
+      return this.stabilizationWindowTracker.isOutsideStabilizationWindowForScaleUp(
+        elasticityStrategy
+      );
+    } else {
+      return this.stabilizationWindowTracker.isOutsideStabilizationWindowForScaleDown(
+        elasticityStrategy
+      );
+    }
+  }
+
+  private getTolerance(sloOutputParams: SloCompliance) {
+    return sloOutputParams.tolerance ?? this.getDefaultTolerance();
   }
 }
