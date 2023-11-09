@@ -6,21 +6,20 @@ import {
   initSelf,
 } from '@polaris-sloc/core';
 
-// ToDo after code generation:
-// - Add configuration parameters to the K8ssandraHorizontalElasticityStrategyConfig interface.
-// - If the elasticity strategy does not take SloCompliance objects as input,
-//   adapt the first generic parameter of K8ssandraHorizontalElasticityStrategyKind and K8ssandraHorizontalElasticityStrategy accordingly.
-// - If the elasticity strategy should operate on a subtype of SloTarget,
-//   adapt the second generic parameter of K8ssandraHorizontalElasticityStrategyKind and K8ssandraHorizontalElasticityStrategy accordingly.
-// - (optional) Replace the ObjectKind.group in the constructor of K8ssandraHorizontalElasticityStrategy with your own.
-//   If you change the group name, ensure that you also accordingly adapt the `1-rbac.yaml` files of all
-//   the elasticity strategy controller that needs to read and SLO controllers that need to write this ElasticityStrategy CRD.
-
 /**
  * Configuration options for K8ssandraHorizontalElasticityStrategy.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface K8ssandraHorizontalElasticityStrategyConfig {}
+export interface K8ssandraHorizontalElasticityStrategyConfig {
+  /**
+   * The minimum number of nodes the k8ssandra cluster should have.
+   */
+  minNodes?: number;
+
+  /**
+   * The maximum number of nodes the k8ssandra clsuter should have.
+   */
+  maxNodes?: number;
+}
 
 /**
  * Denotes the elasticity strategy kind for the K8ssandraHorizontalElasticityStrategy.
