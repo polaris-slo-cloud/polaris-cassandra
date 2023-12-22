@@ -59,6 +59,8 @@ export class K8ssandraHorizontalElasticityStrategyController extends SloComplian
     const k8c = await this.loadTarget(elasticityStrategy);
     Logger.log('Loaded K8ssandraCluster:', k8c);
 
+    const oldSize = k8c.spec.cassandra.datacenters[0].size;
+
     let updatedK8c = await this.updateK8ssandraCluster(elasticityStrategy, k8c);
 
     if (updatedK8c == null) {
@@ -68,6 +70,13 @@ export class K8ssandraHorizontalElasticityStrategyController extends SloComplian
     }
 
     updatedK8c = this.normalize(k8c, elasticityStrategy.spec.staticConfig);
+
+    const newSize = updatedK8c.spec.cassandra.datacenters[0].size;
+
+    if (oldSize == newSize) {
+      Logger.log('No update, not tracking execution');
+      return;
+    }
 
     await this.orchClient.update(updatedK8c);
     this.stabilizationWindowTracker.trackExecution(elasticityStrategy);
